@@ -1,1164 +1,254 @@
+kind: Pod
 apiVersion: v1
-kind: Deployment
-labels:
-  template: airflow
-message: |-
-  To access the Airflow web UI, open the Route for the 'webserver' deployment.
-  To upload/write the DAGs, open the Route for the 'jupyter' deployment.
 metadata:
+  generateName: airflow-w-86449567bd-
   annotations:
-    description: Deploys Apache Airflow on Openshift.
-
-
-      Required variables - 'Application name', 'Airflow web UI username', 'Airflow web UI password' and 'Jupyter password'. Rest of the variables are optional and are filled/generated with default/auto values, if you do not explicitly provide a value.
-
-
-      Dependencies - Before deployment you can list all required Python pip packages in the 'Python pip requirements' parameter, separated by whitespace. After deployment you can edit your Python pip requirements in the 'pip-requirements' config-map, similarly separated by whitespace, and redeploy the worker and scheduler pods. Note however, that this is a fragile and unrecommended way to set up dependencies. Consider using PythonVirtualenvOperator, that lets you load needed libraries individually for the tasks that need them. If more complicated dependencies are needed, consider building the image yourself according to Airflow documentation, and use that image as the basis for this deployment by setting the image link to the 'Airflow image link' parameter.
-
-
-      Uploading/writing DAGs - To upload or write DAGs, open the route for the 'jupyter' deployment. Once uploaded or written through the jupyter user interface, the DAGs should appear to the Airflow web UI within about 5 minutes.
-
-
-      By default, the setup deploys the Airflow webserver backed by 2 Celery workers.
-      The configuration for the worker pods can be changed according to the Openshift Quota(Limit Range). To get more quota, contact Openshift admins.
-
-
-      WARNING - This deployment setup is still in the experimental stage.
-    iconClass: icon-datavirt
-    openshift.io/display-name: Apache Airflow
-    openshift.io/documentation-url: https://github.com/CSCfi/airflow-openshift
-    openshift.io/support-url: https://www.csc.fi/contact-info
-    openshift.io/long-description:
-      Apache Airflow (or simply Airflow) is a platform to programmatically author, schedule, and monitor workflows.
-
-      The workflows are defined as code, so that they become more maintainable, versionable, testable, and collaborative.
-
-      Airflow is used to author workflows as directed acyclic graphs (DAGs) of tasks. The Airflow scheduler executes your tasks on an array of workers while following the specified dependencies.
-
-      The rich user interface makes it easy to visualize pipelines running in production, monitor progress, and troubleshoot issues when needed.
-    openshift.io/provider-display-name: CSC
-    tags: python, data pipelines, orchestration platform
-    template.openshift.io/bindable: "false"
-  name: apache-airflow
-
-objects:
-  - apiVersion: v1
-    kind: DeploymentConfig
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: flower
-    spec:
-      replicas: 1
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: flower
-      strategy:
-        type: Rolling
-      template:
-        metadata:
-          labels:
-            app: ${APPLICATION_NAME}
-            deploymentconfig: flower
-        spec:
-          initContainers:
-            - image: docker-registry.rahti.csc.fi/da-images/busybox:1
-              name: fernet-key-waiter
-              command:
-                [
-                  "sh",
-                  "-c",
-                  "while [ ! -f /tmp/fernet_key/fernet_key.txt ]; do sleep 1; done",
-                ]
-              volumeMounts:
-                - name: fernet-key-vol
-                  mountPath: /tmp/fernet_key
-          containers:
-            - env:
-                - name: FLOWER_PORT
-                  value: "5555"
-                - name: FLOWER_HOST
-                  value: flower
-                - name: AIRFLOW__CORE__EXECUTOR
-                  value: CeleryExecutor
-                - name: FLOWER_BASIC_AUTH
-                  valueFrom:
-                    secretKeyRef:
-                      key: flower_basic_auth
-                      name: flower-auth
-                - name: AIRFLOW__CELERY__BROKER_URL
-                  valueFrom:
-                    secretKeyRef:
-                      key: broker-url
-                      name: redis
-                - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-                  valueFrom:
-                    secretKeyRef:
-                      key: connection-string
-                      name: postgresql
-                - name: AIRFLOW__CELERY__RESULT_BACKEND
-                  valueFrom:
-                    secretKeyRef:
-                      key: result-backend
-                      name: postgresql
-                - name: AIRFLOW__CORE__FERNET_KEY_CMD
-                  value: "cat /tmp/fernet_key/fernet_key.txt"
-              image: ${AIRFLOW_IMAGE}
-              args:
-                - celery
-                - flower
-              imagePullPolicy: Always
-              name: flower
-              ports:
-                - containerPort: 8080
-                  protocol: TCP
-                - containerPort: 8793
-                  protocol: TCP
-                - containerPort: 5555
-                  protocol: TCP
-              resources: {}
-              volumeMounts:
-                - mountPath: /tmp/fernet_key
-                  name: fernet-key-vol
-          volumes:
-            - name: fernet-key-vol
-              persistentVolumeClaim:
-                claimName: fernet-key-pvc
-          dnsPolicy: ClusterFirst
-          restartPolicy: Always
-          schedulerName: default-scheduler
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-      triggers:
-        - type: ConfigChange
-
-  - apiVersion: v1
-    kind: DeploymentConfig
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-        template: postgresql-ephemeral-template
-      name: ${POSTGRESQL_HOST}
-    spec:
-      replicas: 1
-      selector:
-        name: ${POSTGRESQL_HOST}
-      strategy:
-        type: Recreate
-      template:
-        metadata:
-          labels:
-            name: ${POSTGRESQL_HOST}
-        spec:
-          containers:
-            - env:
-                - name: POSTGRESQL_USER
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user
-                      name: postgresql
-                - name: POSTGRESQL_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-password
-                      name: postgresql
-                - name: POSTGRESQL_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-name
-                      name: postgresql
-              image: centos/postgresql-12-centos7:1
-              imagePullPolicy: IfNotPresent
-              livenessProbe:
-                failureThreshold: 3
-                initialDelaySeconds: 30
-                periodSeconds: 10
-                successThreshold: 1
-                tcpSocket:
-                  port: 5432
-                timeoutSeconds: 1
-              name: ${POSTGRESQL_HOST}
-              ports:
-                - containerPort: 5432
-                  protocol: TCP
-              readinessProbe:
-                exec:
-                  command:
-                    - /bin/sh
-                    - -i
-                    - -c
-                    - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c
-                      'SELECT 1'
-                failureThreshold: 3
-                initialDelaySeconds: 20
-                periodSeconds: 10
-                successThreshold: 1
-                timeoutSeconds: 1
-              resources:
-                limits:
-                  memory: 1Gi
-              securityContext:
-                capabilities: {}
-                privileged: false
-              volumeMounts:
-                - mountPath: /var/lib/pgsql/data
-                  name: postgresql-data
-          dnsPolicy: ClusterFirst
-          restartPolicy: Always
-          schedulerName: default-scheduler
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-          volumes:
-            - name: postgresql-data
-              persistentVolumeClaim:
-                claimName: ${PERSISTENT_VOLUME_CLAIM_DB}
-      triggers:
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${POSTGRESQL_HOST}
-            from:
-              kind: ImageStreamTag
-              name: postgresql:12
-              namespace: openshift
-          type: ImageChange
-        - type: ConfigChange
-
-  - apiVersion: v1
-    kind: DeploymentConfig
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-        template: redis-ephemeral-template
-      name: ${REDIS_HOST}
-    spec:
-      replicas: 1
-      selector:
-        name: ${REDIS_HOST}
-      strategy:
-        activeDeadlineSeconds: 21600
-        recreateParams:
-          timeoutSeconds: 600
-        resources: {}
-        type: Recreate
-      template:
-        metadata:
-          labels:
-            name: ${REDIS_HOST}
-        spec:
-          containers:
-            - env:
-                - name: REDIS_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-password
-                      name: redis
-              image: registry.access.redhat.com/rhscl/redis-32-rhel7@sha256:50605070421172c6c41e03bcb4391f418240085f8e03f0f82190da75e51df9e3
-              imagePullPolicy: IfNotPresent
-              livenessProbe:
-                failureThreshold: 3
-                initialDelaySeconds: 30
-                periodSeconds: 10
-                successThreshold: 1
-                tcpSocket:
-                  port: 6379
-                timeoutSeconds: 1
-              name: ${REDIS_HOST}
-              ports:
-                - containerPort: 6379
-                  protocol: TCP
-              readinessProbe:
-                exec:
-                  command:
-                    - /bin/sh
-                    - -i
-                    - -c
-                    - test "$(redis-cli -h 127.0.0.1 -a $REDIS_PASSWORD ping)" == "PONG"
-                failureThreshold: 3
-                initialDelaySeconds: 5
-                periodSeconds: 10
-                successThreshold: 1
-                timeoutSeconds: 1
-              resources:
-                limits:
-                  memory: 1Gi
-              securityContext:
-                capabilities: {}
-                privileged: false
-              volumeMounts:
-                - mountPath: /var/lib/redis/data
-                  name: redis-data
-          dnsPolicy: ClusterFirst
-          restartPolicy: Always
-          schedulerName: default-scheduler
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-          volumes:
-            - emptyDir: {}
-              name: redis-data
-      test: false
-      triggers:
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${REDIS_HOST}
-            from:
-              kind: ImageStreamTag
-              name: redis:3.2
-              namespace: openshift
-          type: ImageChange
-        - type: ConfigChange
-
-  - apiVersion: v1
-    kind: DeploymentConfig
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: webserver
-    spec:
-      replicas: 1
-      revisionHistoryLimit: 10
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: webserver
-      strategy:
-        activeDeadlineSeconds: 21600
-        resources: {}
-        rollingParams:
-          intervalSeconds: 1
-          maxSurge: 25%
-          maxUnavailable: 25%
-          timeoutSeconds: 600
-          updatePeriodSeconds: 1
-        type: Rolling
-      template:
-        metadata:
-          labels:
-            app: ${APPLICATION_NAME}
-            deploymentconfig: webserver
-        spec:
-          initContainers:
-            - image: docker-registry.rahti.csc.fi/airflow-image/fernet-key-generator:latest
-              name: fernet-key-generator
-              command: ["python3", "create_fernet_key.py"]
-              volumeMounts:
-                - name: fernet-key-vol
-                  mountPath: /tmp/fernet_key
-          containers:
-            - name: webserver
-              env:
-                - name: AIRFLOW__CORE__EXECUTOR
-                  value: CeleryExecutor
-                - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-                  valueFrom:
-                    secretKeyRef:
-                      key: connection-string
-                      name: postgresql
-                - name: _AIRFLOW_DB_UPGRADE
-                  value: "true"
-                - name: _AIRFLOW_WWW_USER_CREATE
-                  value: "true"
-                - name: _AIRFLOW_WWW_USER_USERNAME
-                  value: ${AUTHENTICATION_USERNAME}
-                - name: _AIRFLOW_WWW_USER_PASSWORD
-                  value: ${AUTHENTICATION_PASSWORD}
-                - name: AIRFLOW__CELERY__BROKER_URL
-                  valueFrom:
-                    secretKeyRef:
-                      key: broker-url
-                      name: redis
-                - name: AIRFLOW__CELERY__RESULT_BACKEND
-                  valueFrom:
-                    secretKeyRef:
-                      key: result-backend
-                      name: postgresql
-                - name: AIRFLOW_HOME
-                  value: "/opt/airflow"
-                - name: HOME
-                  value: "/opt/airflow"
-                - name: AIRFLOW__CORE__FERNET_KEY_CMD
-                  value: "cat /tmp/fernet_key/fernet_key.txt"
-              image: ${AIRFLOW_IMAGE}
-              args:
-                - webserver
-              imagePullPolicy: Always
-              livenessProbe:
-                httpGet:
-                  path: /
-                  port: 8080
-                initialDelaySeconds: 120
-                timeoutSeconds: 30
-              ports:
-                - containerPort: 5555
-                  protocol: TCP
-                - containerPort: 8080
-                  protocol: TCP
-                - containerPort: 8793
-                  protocol: TCP
-              resources:
-                limits:
-                  cpu: "1"
-                  memory: 2Gi
-                requests:
-                  cpu: "1"
-                  memory: 2Gi
-              volumeMounts:
-                - mountPath: "/opt/airflow/dags"
-                  name: airpod-dag-vol
-                - mountPath: "/opt/airflow/logs"
-                  name: airpod-log-vol
-                - mountPath: /pip-requirements.txt
-                  name: pip-requirements-vol
-                  subPath: pip-requirements.txt
-                - mountPath: /tmp/fernet_key
-                  name: fernet-key-vol
-          dnsPolicy: ClusterFirst
-          restartPolicy: Always
-          schedulerName: default-scheduler
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-          volumes:
-            - name: airpod-dag-vol
-              persistentVolumeClaim:
-                claimName: ${PERSISTENT_VOLUME_CLAIM_DAG}
-            - name: airpod-log-vol
-              persistentVolumeClaim:
-                claimName: ${PERSISTENT_VOLUME_CLAIM_LOG}
-            - name: fernet-key-vol
-              persistentVolumeClaim:
-                claimName: fernet-key-pvc
-            - configMap:
-                defaultMode: 420
-                items:
-                  - key: pip-requirements.txt
-                    path: pip-requirements.txt
-                name: pip-requirements
-              name: pip-requirements-vol
-      test: false
-      triggers:
-        - type: ConfigChange
-
-  - apiVersion: v1
-    kind: DeploymentConfig
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: scheduler
-    spec:
-      replicas: 1
-      revisionHistoryLimit: 10
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: scheduler
-      strategy:
-        activeDeadlineSeconds: 21600
-        resources: {}
-        rollingParams:
-          intervalSeconds: 1
-          maxSurge: 25%
-          maxUnavailable: 25%
-          timeoutSeconds: 600
-          updatePeriodSeconds: 1
-        type: Rolling
-      template:
-        metadata:
-          labels:
-            app: ${APPLICATION_NAME}
-            deploymentconfig: scheduler
-        spec:
-          initContainers:
-            - image: docker-registry.rahti.csc.fi/airflow-image/fernet-key-generator:latest
-              name: fernet-key-generator
-              command: ["python3", "create_fernet_key.py"]
-              volumeMounts:
-                - name: fernet-key-vol
-                  mountPath: /tmp/fernet_key
-          containers:
-            - name: scheduler
-              env:
-                - name: AIRFLOW__CORE__EXECUTOR
-                  value: CeleryExecutor
-                - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-                  valueFrom:
-                    secretKeyRef:
-                      key: connection-string
-                      name: postgresql
-                - name: AIRFLOW__CELERY__BROKER_URL
-                  valueFrom:
-                    secretKeyRef:
-                      key: broker-url
-                      name: redis
-                - name: AIRFLOW__CELERY__RESULT_BACKEND
-                  valueFrom:
-                    secretKeyRef:
-                      key: result-backend
-                      name: postgresql
-                - name: AIRFLOW_HOME
-                  value: "/opt/airflow"
-                - name: HOME
-                  value: "/opt/airflow"
-                - name: _PIP_ADDITIONAL_REQUIREMENTS
-                  valueFrom:
-                    configMapKeyRef:
-                      name: pip-requirements
-                      key: pip-requirements.txt
-              image: ${AIRFLOW_IMAGE}
-              args:
-                - scheduler
-              imagePullPolicy: Always
-              ports:
-                - containerPort: 5555
-                  protocol: TCP
-                - containerPort: 8080
-                  protocol: TCP
-                - containerPort: 8793
-                  protocol: TCP
-              resources:
-                limits:
-                  cpu: "1"
-                  memory: 2Gi
-                requests:
-                  cpu: "1"
-                  memory: 2Gi
-              volumeMounts:
-                - mountPath: "/opt/airflow/dags"
-                  name: airpod-dag-vol
-                - mountPath: "/opt/airflow/logs"
-                  name: airpod-log-vol
-                - mountPath: /pip-requirements.txt
-                  name: pip-requirements-vol
-                  subPath: pip-requirements.txt
-                - mountPath: /tmp/fernet_key
-                  name: fernet-key-vol
-          dnsPolicy: ClusterFirst
-          restartPolicy: Always
-          schedulerName: default-scheduler
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-          volumes:
-            - name: airpod-dag-vol
-              persistentVolumeClaim:
-                claimName: ${PERSISTENT_VOLUME_CLAIM_DAG}
-            - name: airpod-log-vol
-              persistentVolumeClaim:
-                claimName: ${PERSISTENT_VOLUME_CLAIM_LOG}
-            - name: fernet-key-vol
-              persistentVolumeClaim:
-                claimName: fernet-key-pvc
-            - configMap:
-                defaultMode: 420
-                items:
-                  - key: pip-requirements.txt
-                    path: pip-requirements.txt
-                name: pip-requirements
-              name: pip-requirements-vol
-      test: false
-      triggers:
-        - type: ConfigChange
-
-  - apiVersion: v1
-    kind: DeploymentConfig
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: worker
-    spec:
-      replicas: ${WORKER_COUNT}
-      revisionHistoryLimit: 10
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: worker
-      strategy:
-        type: Rolling
-      template:
-        metadata:
-          labels:
-            app: ${APPLICATION_NAME}
-            deploymentconfig: worker
-        spec:
-          initContainers:
-            - image: docker-registry.rahti.csc.fi/da-images/busybox:1
-              name: fernet-key-waiter
-              command:
-                [
-                  "sh",
-                  "-c",
-                  "while [ ! -f /tmp/fernet_key/fernet_key.txt ]; do sleep 1; done",
-                ]
-              volumeMounts:
-                - name: fernet-key-vol
-                  mountPath: /tmp/fernet_key
-          containers:
-            - env:
-                - name: AIRFLOW__CORE__EXECUTOR
-                  value: CeleryExecutor
-                - name: AIRFLOW__CELERY__BROKER_URL
-                  valueFrom:
-                    secretKeyRef:
-                      key: broker-url
-                      name: redis
-                - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-                  valueFrom:
-                    secretKeyRef:
-                      key: connection-string
-                      name: postgresql
-                - name: C_FORCE_ROOT
-                  value: "true"
-                - name: AIRFLOW_HOME
-                  value: "/opt/airflow"
-                - name: HOME
-                  value: "/opt/airflow"
-                - name: _PIP_ADDITIONAL_REQUIREMENTS
-                  valueFrom:
-                    configMapKeyRef:
-                      name: pip-requirements
-                      key: pip-requirements.txt
-                - name: AIRFLOW__CORE__FERNET_KEY_CMD
-                  value: "cat /tmp/fernet_key/fernet_key.txt"
-                - name: AIRFLOW__CELERY__RESULT_BACKEND
-                  valueFrom:
-                    secretKeyRef:
-                      key: result-backend
-                      name: postgresql
-              image: ${AIRFLOW_IMAGE}
-              args:
-                - celery
-                - worker
-              imagePullPolicy: Always
-              name: worker
-              ports:
-                - containerPort: 5555
-                  protocol: TCP
-                - containerPort: 8080
-                  protocol: TCP
-                - containerPort: 8793
-                  protocol: TCP
-              resources:
-                requests:
-                  cpu: ${WORKER_CPU}
-                  memory: ${WORKER_MEMORY}
-              volumeMounts:
-                - mountPath: "/opt/airflow/dags"
-                  name: airpod-dag-vol
-                - mountPath: "/opt/airflow/logs"
-                  name: airpod-log-vol
-                - mountPath: /pip-requirements.txt
-                  name: pip-requirements-vol
-                  subPath: pip-requirements.txt
-                - mountPath: "/tmp/airflow"
-                  name: airpod-tmp-worker-vol
-                - mountPath: /tmp/fernet_key
-                  name: fernet-key-vol
-          dnsPolicy: ClusterFirst
-          restartPolicy: Always
-          schedulerName: default-scheduler
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-          volumes:
-            - name: airpod-dag-vol
-              persistentVolumeClaim:
-                claimName: ${PERSISTENT_VOLUME_CLAIM_DAG}
-            - name: airpod-log-vol
-              persistentVolumeClaim:
-                claimName: ${PERSISTENT_VOLUME_CLAIM_LOG}
-            - name: fernet-key-vol
-              persistentVolumeClaim:
-                claimName: fernet-key-pvc
-            - configMap:
-                defaultMode: 420
-                items:
-                  - key: pip-requirements.txt
-                    path: pip-requirements.txt
-                name: pip-requirements
-              name: pip-requirements-vol
-            - name: airpod-tmp-worker-vol
-              persistentVolumeClaim:
-                claimName: ${PERSISTENT_VOLUME_CLAIM_TMP_WORKER}
-      test: false
-      triggers:
-        - type: ConfigChange
-
-  - apiVersion: v1
-    kind: DeploymentConfig
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: jupyter
-    spec:
-      replicas: 1
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: jupyter
-      strategy:
-        type: Rolling
-      template:
-        metadata:
-          labels:
-            app: ${APPLICATION_NAME}
-            deploymentconfig: jupyter
-        spec:
-          containers:
-            - env:
-                - name: JUPYTER_NOTEBOOK_PASSWORD
-                  value: ${JUPYTER_PASSWORD}
-              image: >-
-                quay.io/jupyteronopenshift/s2i-minimal-notebook-py35@sha256:e6f032b57a483b98059eb3e9f4081b67e7224d22e06bddf6700d88ceab7478c3
-              imagePullPolicy: Always
-              livenessProbe:
-                httpGet:
-                  path: /
-                  port: 8080
-                initialDelaySeconds: 30
-                timeoutSeconds: 30
-              name: s2i-minimal-notebook-py3
-              ports:
-                - containerPort: 8080
-                  protocol: TCP
-              resources: {}
-              volumeMounts:
-                - mountPath: /opt/app-root/src
-                  name: airpod-dag-vol
-          volumes:
-            - name: airpod-dag-vol
-              persistentVolumeClaim:
-                claimName: ${PERSISTENT_VOLUME_CLAIM_DAG}
-      triggers:
-        - type: ConfigChange
-
-  - apiVersion: v1
-    data:
-      pip-requirements.txt: ${PIP_REQUIREMENTS}
-    kind: ConfigMap
-    metadata:
-      name: pip-requirements
-
-  - apiVersion: v1
-    stringData:
-      flower_basic_auth: ${FLOWER_USER}:${FLOWER_PASSWORD}
-      flower_username: ${FLOWER_USER}
-      flower_password: ${FLOWER_PASSWORD}
-    kind: Secret
-    metadata:
-      name: flower-auth
-    type: Opaque
-
-  - apiVersion: v1
-    stringData:
-      database-name: ${POSTGRESQL_DATABASE}
-      database-password: ${POSTGRESQL_PASSWORD}
-      database-user: ${POSTGRESQL_USER}
-      connection-string: postgresql+psycopg2://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@${POSTGRESQL_HOST}:5432/${POSTGRESQL_DATABASE}
-      result-backend: db+postgresql://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@${POSTGRESQL_HOST}:5432/${POSTGRESQL_DATABASE}
-    kind: Secret
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-        template: postgresql-ephemeral-template
-      name: postgresql
-    type: Opaque
-
-  - apiVersion: v1
-    stringData:
-      database-password: ${REDIS_PASSWORD}
-      broker-url: redis://:${REDIS_PASSWORD}@${REDIS_HOST}:6379/1
-    kind: Secret
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-        template: redis-ephemeral-template
-      name: redis
-    type: Opaque
-
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: flower
-    spec:
+    cni.projectcalico.org/containerID: 5347b2eb7af2406001550c6317831817ee788fbf25dd10e64e8ac46bc26f6622
+    cni.projectcalico.org/podIP: 172.17.3.165/32
+    cni.projectcalico.org/podIPs: 172.17.3.165/32
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.17.3.165"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "k8s-pod-network",
+          "ips": [
+              "172.17.3.165"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/generated-by: OpenShiftWebConsole
+    openshift.io/scc: restricted
+  resourceVersion: "11383816"
+  name: airflow-w-86449567bd-dl2vr
+  uid: 8dee253b-95ae-49b3-b84f-47825589461f
+  creationTimestamp: "2023-01-19T10:52:32Z"
+  managedFields:
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: v1
+      time: "2023-01-19T10:52:32Z"
+      fieldsType: FieldsV1
+      fieldsV1:
+        "f:metadata":
+          "f:annotations":
+            .: {}
+            "f:openshift.io/generated-by": {}
+          "f:generateName": {}
+          "f:labels":
+            .: {}
+            "f:app": {}
+            "f:deploymentconfig": {}
+            "f:pod-template-hash": {}
+          "f:ownerReferences":
+            .: {}
+            'k:{"uid":"49482cbd-b231-4d15-9b4d-73d207b1fef6"}': {}
+        "f:spec":
+          "f:containers":
+            'k:{"name":"airflow-w"}':
+              .: {}
+              "f:image": {}
+              "f:imagePullPolicy": {}
+              "f:name": {}
+              "f:ports":
+                .: {}
+                'k:{"containerPort":8080,"protocol":"TCP"}':
+                  .: {}
+                  "f:containerPort": {}
+                  "f:protocol": {}
+              "f:resources": {}
+              "f:terminationMessagePath": {}
+              "f:terminationMessagePolicy": {}
+          "f:dnsPolicy": {}
+          "f:enableServiceLinks": {}
+          "f:restartPolicy": {}
+          "f:schedulerName": {}
+          "f:securityContext": {}
+          "f:terminationGracePeriodSeconds": {}
+    - manager: kubelet
+      operation: Update
+      apiVersion: v1
+      time: "2023-01-19T10:52:32Z"
+      fieldsType: FieldsV1
+      fieldsV1:
+        "f:status":
+          "f:conditions":
+            'k:{"type":"ContainersReady"}':
+              .: {}
+              "f:lastProbeTime": {}
+              "f:lastTransitionTime": {}
+              "f:message": {}
+              "f:reason": {}
+              "f:status": {}
+              "f:type": {}
+            'k:{"type":"Initialized"}':
+              .: {}
+              "f:lastProbeTime": {}
+              "f:lastTransitionTime": {}
+              "f:status": {}
+              "f:type": {}
+            'k:{"type":"Ready"}':
+              .: {}
+              "f:lastProbeTime": {}
+              "f:lastTransitionTime": {}
+              "f:message": {}
+              "f:reason": {}
+              "f:status": {}
+              "f:type": {}
+          "f:containerStatuses": {}
+          "f:hostIP": {}
+          "f:startTime": {}
+      subresource: status
+    - manager: Go-http-client
+      operation: Update
+      apiVersion: v1
+      time: "2023-01-19T10:52:33Z"
+      fieldsType: FieldsV1
+      fieldsV1:
+        "f:metadata":
+          "f:annotations":
+            "f:cni.projectcalico.org/containerID": {}
+            "f:cni.projectcalico.org/podIP": {}
+            "f:cni.projectcalico.org/podIPs": {}
+      subresource: status
+    - manager: multus
+      operation: Update
+      apiVersion: v1
+      time: "2023-01-19T10:52:33Z"
+      fieldsType: FieldsV1
+      fieldsV1:
+        "f:metadata":
+          "f:annotations":
+            "f:k8s.v1.cni.cncf.io/network-status": {}
+            "f:k8s.v1.cni.cncf.io/networks-status": {}
+      subresource: status
+  namespace: project-mid
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: airflow-w-86449567bd
+      uid: 49482cbd-b231-4d15-9b4d-73d207b1fef6
+      controller: true
+      blockOwnerDeletion: true
+  labels:
+    app: airflow-w
+    deploymentconfig: airflow-w
+    pod-template-hash: 86449567bd
+spec:
+  restartPolicy: Always
+  serviceAccountName: default
+  imagePullSecrets:
+    - name: default-dockercfg-rf5z7
+  priority: 0
+  schedulerName: default-scheduler
+  enableServiceLinks: true
+  terminationGracePeriodSeconds: 30
+  preemptionPolicy: PreemptLowerPriority
+  nodeName: 10.243.0.5
+  securityContext:
+    seLinuxOptions:
+      level: "s0:c26,c25"
+    fsGroup: 1000700000
+  containers:
+    - resources: {}
+      terminationMessagePath: /dev/termination-log
+      name: airflow-w
+      securityContext:
+        capabilities:
+          drop:
+            - KILL
+            - MKNOD
+            - SETGID
+            - SETUID
+        runAsUser: 1000700000
       ports:
-        - name: 5555-tcp
-          port: 5555
+        - containerPort: 8080
           protocol: TCP
-          targetPort: 5555
-        - name: 8080-tcp
-          port: 8080
-          protocol: TCP
-          targetPort: 8080
-        - name: 8793-tcp
-          port: 8793
-          protocol: TCP
-          targetPort: 8793
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: flower
-      sessionAffinity: None
-      type: ClusterIP
-    status:
-      loadBalancer: {}
-
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-        template: postgresql-ephemeral-template
-      name: ${POSTGRESQL_HOST}
-    spec:
-      ports:
-        - name: ${POSTGRESQL_HOST}
-          port: 5432
-          protocol: TCP
-          targetPort: 5432
-      selector:
-        name: ${POSTGRESQL_HOST}
-      sessionAffinity: None
-      type: ClusterIP
-    status:
-      loadBalancer: {}
-
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-        template: redis-ephemeral-template
-      name: ${REDIS_HOST}
-    spec:
-      ports:
-        - name: ${REDIS_HOST}
-          port: 6379
-          protocol: TCP
-          targetPort: 6379
-      selector:
-        name: ${REDIS_HOST}
-      sessionAffinity: None
-      type: ClusterIP
-    status:
-      loadBalancer: {}
-
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: scheduler
-    spec:
-      ports:
-        - name: 5555-tcp
-          port: 5555
-          protocol: TCP
-          targetPort: 5555
-        - name: 8080-tcp
-          port: 8080
-          protocol: TCP
-          targetPort: 8080
-        - name: 8793-tcp
-          port: 8793
-          protocol: TCP
-          targetPort: 8793
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: scheduler
-      sessionAffinity: None
-      type: ClusterIP
-    status:
-      loadBalancer: {}
-
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: webserver
-    spec:
-      ports:
-        - name: 5555-tcp
-          port: 5555
-          protocol: TCP
-          targetPort: 5555
-        - name: 8080-tcp
-          port: 8080
-          protocol: TCP
-          targetPort: 8080
-        - name: 8793-tcp
-          port: 8793
-          protocol: TCP
-          targetPort: 8793
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: webserver
-      sessionAffinity: None
-      type: ClusterIP
-    status:
-      loadBalancer: {}
-
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: worker
-    spec:
-      ports:
-        - name: 5555-tcp
-          port: 5555
-          protocol: TCP
-          targetPort: 5555
-        - name: 8080-tcp
-          port: 8080
-          protocol: TCP
-          targetPort: 8080
-        - name: 8793-tcp
-          port: 8793
-          protocol: TCP
-          targetPort: 8793
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: worker
-      sessionAffinity: None
-      type: ClusterIP
-    status:
-      loadBalancer: {}
-
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: jupyter
-    spec:
-      ports:
-        - name: 8080-tcp
-          port: 8080
-          protocol: TCP
-          targetPort: 8080
-      selector:
-        app: ${APPLICATION_NAME}
-        deploymentconfig: jupyter
-    status:
-      loadBalancer: {}
-
-  - apiVersion: v1
-    kind: Route
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: ${APPLICATION_NAME}-flower
-    spec:
-      port:
-        targetPort: 5555-tcp
-      tls:
-        insecureEdgeTerminationPolicy: Redirect
-        termination: edge
-      to:
-        kind: Service
-        name: flower
-        weight: 100
-      wildcardPolicy: None
-
-  - apiVersion: v1
-    kind: Route
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: ${APPLICATION_NAME}
-    spec:
-      port:
-        targetPort: 8080-tcp
-      tls:
-        insecureEdgeTerminationPolicy: Redirect
-        termination: edge
-      to:
-        kind: Service
-        name: webserver
-        weight: 100
-      wildcardPolicy: None
-
-  - apiVersion: v1
-    kind: Route
-    metadata:
-      labels:
-        app: ${APPLICATION_NAME}
-      name: ${APPLICATION_NAME}-jupyter
-    spec:
-      port:
-        targetPort: 8080-tcp
-      tls:
-        insecureEdgeTerminationPolicy: Redirect
-        termination: edge
-      to:
-        kind: Service
-        name: jupyter
-        weight: 100
-      wildcardPolicy: None
-
-  - apiVersion: "v1"
-    kind: "PersistentVolumeClaim"
-    metadata:
-      name: ${PERSISTENT_VOLUME_CLAIM_DAG}
-    spec:
-      accessModes:
-        - "ReadWriteOnce"
-      resources:
-        requests:
-          storage: ${PERSISTENT_VOLUME_CLAIM_DAG_SIZE}
-
-  - apiVersion: "v1"
-    kind: "PersistentVolumeClaim"
-    metadata:
-      name: ${PERSISTENT_VOLUME_CLAIM_LOG}
-    spec:
-      accessModes:
-        - "ReadWriteOnce"
-      resources:
-        requests:
-          storage: ${PERSISTENT_VOLUME_CLAIM_LOG_SIZE}
-
-  - apiVersion: "v1"
-    kind: "PersistentVolumeClaim"
-    metadata:
-      name: ${PERSISTENT_VOLUME_CLAIM_DB}
-    spec:
-      accessModes:
-        - "ReadWriteOnce"
-      resources:
-        requests:
-          storage: ${PERSISTENT_VOLUME_CLAIM_DB_SIZE}
-
-  - apiVersion: "v1"
-    kind: "PersistentVolumeClaim"
-    metadata:
-      name: ${PERSISTENT_VOLUME_CLAIM_TMP_WORKER}
-    spec:
-      accessModes:
-        - "ReadWriteOnce"
-      resources:
-        requests:
-          storage: ${PERSISTENT_VOLUME_CLAIM_TMP_WORKER_SIZE}
-
-  - apiVersion: "v1"
-    kind: "PersistentVolumeClaim"
-    metadata:
-      name: "fernet-key-pvc"
-    spec:
-      accessModes:
-        - "ReadWriteMany"
-      resources:
-        requests:
-          storage: 1Mi
-
-parameters:
-  - description: Name of the Airflow application
-    displayName: Application name
-    name: APPLICATION_NAME
-    required: true
-  - description: Username for the Airflow web UI authentication
-    displayName: Airflow web UI username
-    name: AUTHENTICATION_USERNAME
-    required: true
-  - description: Password for the Airflow web UI authentication
-    displayName: Airflow web UI password
-    name: AUTHENTICATION_PASSWORD
-    required: true
-  - description: Password for accessing the Jupyter web interface used for writing/uploading DAGs
-    displayName: Jupyter password
-    name: JUPYTER_PASSWORD
-    required: true
-  - description: Number of Celery workers
-    displayName: Number of workers
-    name: WORKER_COUNT
-    value: "2"
-  - description: Celery worker CPU (check with your project limits)
-    displayName: Worker CPU
-    name: WORKER_CPU
-    value: "2"
-  - description: Celery worker memory size (check with your project limits)
-    displayName: Worker memory
-    name: WORKER_MEMORY
-    value: "2Gi"
-  - description: Python pip requirements needed for the DAGs, separated by whitespace. NOTE! This feature is fragile, and does not work for example for Airflow providers packages. For best results build your own Airflow image with the dependencies baked in. Consider also using PythonVirtualenvOperator.
-    displayName: Python pip requirements
-    name: PIP_REQUIREMENTS
-    value: "pandas scipy==1.5.1"
-  - description: Username for accessing the Flower web UI for Celery workers
-    displayName: Flower username
-    from: "[A-Z0-9]{12}"
-    generate: expression
-    name: FLOWER_USER
-  - description: Password for accessing the Flower web UI for Celery workers
-    displayName: Flower password
-    from: "[A-Z0-9]{12}"
-    generate: expression
-    name: FLOWER_PASSWORD
-  - description: PostgreSQL (Airflow metadata DB) host
-    displayName: PostgreSQL hostname
-    name: POSTGRESQL_HOST
-    value: postgresql
-    required: true
-  - description: Username for PostgreSQL user that will be used for accessing the database
-    displayName: PostgreSQL connection username
-    from: "user[A-Z0-9]{5}"
-    generate: expression
-    name: POSTGRESQL_USER
-    required: true
-  - description: Password for the PostgreSQL connection user
-    displayName: PostgreSQL connection password
-    from: "[a-zA-Z0-9]{16}"
-    generate: expression
-    name: POSTGRESQL_PASSWORD
-    required: true
-  - description: Database name for PostgreSQL database
-    displayName: PostgreSQL connection database
-    from: "airflow[A-Z0-9]{5}"
-    generate: expression
-    name: POSTGRESQL_DATABASE
-    required: true
-  - description: Redis hostname (to avoid issues with default naming in OpenShift)
-    displayName: Redis hostname
-    name: REDIS_HOST
-    value: redis
-    required: true
-  - description: Password for Redis database
-    displayName: Redis connection password
-    from: "[A-Z0-9]{15}"
-    generate: expression
-    name: REDIS_PASSWORD
-    required: true
-  - description: Airflow image link
-    displayName: Airflow image link
-    name: AIRFLOW_IMAGE
-    value: docker-registry.rahti.csc.fi/airflow-image/airflow-2-os:latest
-    required: true
-  - description: Attached PERSISTENT volume claim name for storing the DAGs
-    displayName: PERSISTENT volume claim name (DAGs)
-    name: PERSISTENT_VOLUME_CLAIM_DAG
-    value: air-dags-pvc
-  - description: Size of the pvc volume storing DAGs
-    displayName: DAG volume storage size
-    name: PERSISTENT_VOLUME_CLAIM_DAG_SIZE
-    value: "1Gi"
-  - description: Attached PERSISTENT volume claim name for storing the logs
-    displayName: PERSISTENT volume claim name (logs)
-    name: PERSISTENT_VOLUME_CLAIM_LOG
-    value: air-logs-pvc
-  - description: Size of the pvc volume storing logs
-    displayName: Logs volume storage size
-    name: PERSISTENT_VOLUME_CLAIM_LOG_SIZE
-    value: "10Gi"
-  - description: Attached PERSISTENT volume claim name for storing metadata in PostgreSQL database
-    displayName: PERSISTENT volume claim name (database)
-    name: PERSISTENT_VOLUME_CLAIM_DB
-    value: air-db-pvc
-  - description: Size of the metadata volume storage
-    displayName: Metadata volume storage size
-    name: PERSISTENT_VOLUME_CLAIM_DB_SIZE
-    value: "1Gi"
-  - description: Attached PERSISTENT volume claim name for storing temporary data across Celery workers
-    displayName: PERSISTENT volume claim name (temporary storage for workers)
-    name: PERSISTENT_VOLUME_CLAIM_TMP_WORKER
-    value: air-tmp-worker-pvc
-  - description: Size of the temporary data storage in Celery workers
-    displayName: Temporary data volume storage size
-    name: PERSISTENT_VOLUME_CLAIM_TMP_WORKER_SIZE
-    value: "2Gi"
+      imagePullPolicy: Always
+      volumeMounts:
+        - name: kube-api-access-rs2hd
+          readOnly: true
+          mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      terminationMessagePolicy: File
+      image: >-
+        image-registry.openshift-image-registry.svc:5000/project-mid/airflow-w@sha256:1d92d4ff5e42af4e91ac03c20c4fefc8346095d42a93f58636010bdf45edd391
+  serviceAccount: default
+  volumes:
+    - name: kube-api-access-rs2hd
+      projected:
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3607
+              path: token
+          - configMap:
+              name: kube-root-ca.crt
+              items:
+                - key: ca.crt
+                  path: ca.crt
+          - downwardAPI:
+              items:
+                - path: namespace
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+          - configMap:
+              name: openshift-service-ca.crt
+              items:
+                - key: service-ca.crt
+                  path: service-ca.crt
+        defaultMode: 420
+  dnsPolicy: ClusterFirst
+  tolerations:
+    - key: node.kubernetes.io/not-ready
+      operator: Exists
+      effect: NoExecute
+      tolerationSeconds: 300
+    - key: node.kubernetes.io/unreachable
+      operator: Exists
+      effect: NoExecute
+      tolerationSeconds: 300
+status:
+  phase: Pending
+  conditions:
+    - type: Initialized
+      status: "True"
+      lastProbeTime: null
+      lastTransitionTime: "2023-01-19T10:52:32Z"
+    - type: Ready
+      status: "False"
+      lastProbeTime: null
+      lastTransitionTime: "2023-01-19T10:52:32Z"
+      reason: ContainersNotReady
+      message: "containers with unready status: [airflow-w]"
+    - type: ContainersReady
+      status: "False"
+      lastProbeTime: null
+      lastTransitionTime: "2023-01-19T10:52:32Z"
+      reason: ContainersNotReady
+      message: "containers with unready status: [airflow-w]"
+    - type: PodScheduled
+      status: "True"
+      lastProbeTime: null
+      lastTransitionTime: "2023-01-19T10:52:32Z"
+  hostIP: 10.243.0.5
+  startTime: "2023-01-19T10:52:32Z"
+  containerStatuses:
+    - name: airflow-w
+      state:
+        waiting:
+          reason: ContainerCreating
+      lastState: {}
+      ready: false
+      restartCount: 0
+      image: >-
+        image-registry.openshift-image-registry.svc:5000/project-mid/airflow-w@sha256:1d92d4ff5e42af4e91ac03c20c4fefc8346095d42a93f58636010bdf45edd391
+      imageID: ""
+      started: false
+  qosClass: BestEffort
