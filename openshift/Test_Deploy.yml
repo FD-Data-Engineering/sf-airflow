@@ -6,16 +6,20 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: httpd
-  replicas: 3
+      app: argocd-deployment-test
   template:
     metadata:
       labels:
-        app: httpd
-    spec:
+        app: argocd-deployment-test
       containers:
-        - name: httpd
-          image: >-
-            image-registry.openshift-image-registry.svc:5000/openshift/httpd:latest
-          ports:
-            - containerPort: 8080
+        - image: ubi8/ubi-minimal
+          name: ubi-minimal
+          command:
+            ["sh", "-c", 'echo "Hello from user $(id -u)" && sleep infinity']
+          volumeMounts:
+            - mountPath: /var/opt/app/data
+              name: data
+      serviceAccountName: default
+      volumes:
+        - emptyDir: {}
+          name: data
