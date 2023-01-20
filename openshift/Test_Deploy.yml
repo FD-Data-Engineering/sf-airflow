@@ -4,8 +4,6 @@ metadata:
   name: deployment-test
   namespace: dev-sf-deploy-test
 spec:
-  securityContext:
-    runAsUser: 1000720000
   selector:
     matchLabels:
       app: httpd
@@ -15,6 +13,8 @@ spec:
       labels:
         app: httpd
     spec:
+      securityContext:
+        runAsUser: 1000720000
       containers:
         - name: httpd
           image: >-
