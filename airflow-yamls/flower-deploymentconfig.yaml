@@ -7,8 +7,8 @@ metadata:
   name: flower
 spec:
   replicas: 1
-  selector:
-    io.kompose.service: flower
+  # selector:
+  #   io.kompose.service: flower
   strategy:
     resources: {}
   template:

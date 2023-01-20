@@ -7,8 +7,8 @@ metadata:
   name: redis
 spec:
   replicas: 1
-  selector:
-    io.kompose.service: redis
+  # selector:
+  #   io.kompose.service: redis
   strategy:
     resources: {}
   template:

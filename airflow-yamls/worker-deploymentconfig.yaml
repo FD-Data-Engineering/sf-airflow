@@ -7,8 +7,8 @@ metadata:
   name: worker
 spec:
   replicas: 1
-  selector:
-    io.kompose.service: worker
+  # selector:
+  #   io.kompose.service: worker
   strategy:
     resources: {}
     type: Recreate
