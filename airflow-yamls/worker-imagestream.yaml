@@ -5,6 +5,7 @@ metadata:
   labels:
     io.kompose.service: worker
   name: worker
+  namespace: dev-sf-deploy-test
 spec:
   lookupPolicy:
     local: false
