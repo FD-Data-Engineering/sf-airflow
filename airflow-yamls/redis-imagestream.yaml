@@ -3,8 +3,8 @@ kind: ImageStream
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: webserver
-  name: webserver
+    io.kompose.service: redis
+  name: redis
 spec:
   lookupPolicy:
     local: false
@@ -12,10 +12,10 @@ spec:
     - annotations: null
       from:
         kind: DockerImage
-        name: jpacerqueira83/docker_airflow:latest
+        name: redis:5.0.5
       generation: null
       importPolicy: {}
-      name: latest
+      name: 5.0.5
       referencePolicy:
         type: ""
 status:

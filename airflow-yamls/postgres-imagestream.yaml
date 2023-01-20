@@ -3,8 +3,8 @@ kind: ImageStream
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: webserver
-  name: webserver
+    io.kompose.service: postgres
+  name: postgres
 spec:
   lookupPolicy:
     local: false
@@ -12,10 +12,10 @@ spec:
     - annotations: null
       from:
         kind: DockerImage
-        name: jpacerqueira83/docker_airflow:latest
+        name: postgres:9.6
       generation: null
       importPolicy: {}
-      name: latest
+      name: "9.6"
       referencePolicy:
         type: ""
 status:

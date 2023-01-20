@@ -3,32 +3,23 @@ kind: DeploymentConfig
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: flower
-  name: flower
+    io.kompose.service: redis
+  name: redis
 spec:
   replicas: 1
   selector:
-    io.kompose.service: flower
+    io.kompose.service: redis
   strategy:
     resources: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: flower
+        io.kompose.service: redis
     spec:
       containers:
-        - args:
-            - flower
-          env:
-            - name: EXECUTOR
-              value: SparkRun
-            - name: REDIS_PASSWORD
-              value: redispass
-          image: ' '
-          name: flower
-          ports:
-            - containerPort: 5555
+        - image: ' '
+          name: redis
           resources: {}
       restartPolicy: Always
   test: false
@@ -37,10 +28,10 @@ spec:
     - imageChangeParams:
         automatic: true
         containerNames:
-          - flower
+          - redis
         from:
           kind: ImageStreamTag
-          name: flower:latest
+          name: redis:5.0.5
       type: ImageChange
 status:
   availableReplicas: 0

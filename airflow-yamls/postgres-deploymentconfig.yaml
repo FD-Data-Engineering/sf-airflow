@@ -3,32 +3,30 @@ kind: DeploymentConfig
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: flower
-  name: flower
+    io.kompose.service: postgres
+  name: postgres
 spec:
   replicas: 1
   selector:
-    io.kompose.service: flower
+    io.kompose.service: postgres
   strategy:
     resources: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: flower
+        io.kompose.service: postgres
     spec:
       containers:
-        - args:
-            - flower
-          env:
-            - name: EXECUTOR
-              value: SparkRun
-            - name: REDIS_PASSWORD
-              value: redispass
+        - env:
+            - name: POSTGRES_DB
+              value: airflow
+            - name: POSTGRES_PASSWORD
+              value: airflow
+            - name: POSTGRES_USER
+              value: airflow
           image: ' '
-          name: flower
-          ports:
-            - containerPort: 5555
+          name: postgres
           resources: {}
       restartPolicy: Always
   test: false
@@ -37,10 +35,10 @@ spec:
     - imageChangeParams:
         automatic: true
         containerNames:
-          - flower
+          - postgres
         from:
           kind: ImageStreamTag
-          name: flower:latest
+          name: postgres:9.6
       type: ImageChange
 status:
   availableReplicas: 0
