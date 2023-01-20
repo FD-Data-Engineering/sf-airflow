@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
@@ -25,7 +25,7 @@ spec:
               value: airflow
             - name: POSTGRES_USER
               value: airflow
-          image: ' '
+          image: " "
           name: postgres
           resources: {}
       restartPolicy: Always

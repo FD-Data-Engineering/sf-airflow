@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
@@ -18,7 +18,7 @@ spec:
         io.kompose.service: redis
     spec:
       containers:
-        - image: ' '
+        - image: " "
           name: redis
           resources: {}
       restartPolicy: Always

@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
@@ -34,7 +34,7 @@ spec:
               value: airflow
             - name: REDIS_PASSWORD
               value: redispass
-          image: ' '
+          image: " "
           name: webserver
           ports:
             - containerPort: 8080
