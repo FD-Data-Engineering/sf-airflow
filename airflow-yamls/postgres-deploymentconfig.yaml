@@ -37,7 +37,7 @@ spec:
         containerNames:
           - postgres
         from:
-          kind: ImageStreamTag
+          kind: DockerImage
           name: postgres:9.6
       type: ImageChange
 status:

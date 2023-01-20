@@ -70,7 +70,7 @@ spec:
         containerNames:
           - webserver
         from:
-          kind: ImageStreamTag
+          kind: DockerImage
           name: webserver:latest
       type: ImageChange
 status:

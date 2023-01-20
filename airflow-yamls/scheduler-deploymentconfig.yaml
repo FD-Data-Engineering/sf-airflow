@@ -70,7 +70,7 @@ spec:
         containerNames:
           - scheduler
         from:
-          kind: ImageStreamTag
+          kind: DockerImage
           name: scheduler:latest
       type: ImageChange
 status:

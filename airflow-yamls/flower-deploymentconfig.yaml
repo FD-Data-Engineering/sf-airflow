@@ -39,7 +39,7 @@ spec:
         containerNames:
           - flower
         from:
-          kind: ImageStreamTag
+          kind: DockerImage
           name: flower:latest
       type: ImageChange
 status:

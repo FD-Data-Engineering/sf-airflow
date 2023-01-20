@@ -30,7 +30,7 @@ spec:
         containerNames:
           - redis
         from:
-          kind: ImageStreamTag
+          kind: DockerImage
           name: redis:5.0.5
       type: ImageChange
 status:

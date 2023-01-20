@@ -74,7 +74,7 @@ spec:
         containerNames:
           - worker
         from:
-          kind: ImageStreamTag
+          kind: DockerImage
           name: worker:latest
       type: ImageChange
 status:
