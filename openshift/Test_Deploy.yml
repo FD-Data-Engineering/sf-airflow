@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: deployment-test
-  namespace: def-sf-test
+  namespace: dev-sf-deploy-test
 spec:
   selector:
     matchLabels:
