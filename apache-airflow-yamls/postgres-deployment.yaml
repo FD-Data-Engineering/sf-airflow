@@ -31,7 +31,7 @@ spec:
               value: airflow
             - name: POSTGRES_USER
               value: airflow
-          image: registry.redhat.io/rhscl/postgresql-94-rhel7
+          image: icr.io/container_registry_esg/postgres11
           name: postgres11
           resources: {}
       restartPolicy: Always
