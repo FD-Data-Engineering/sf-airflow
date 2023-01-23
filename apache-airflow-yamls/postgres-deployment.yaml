@@ -31,8 +31,8 @@ spec:
               value: airflow
             - name: POSTGRES_USER
               value: airflow
-          image: icr.io/container_registry_esg/postgres_11:latest
-          name: postgres_11
+          image: icr.io/container_registry_esg/postgres11
+          name: postgres11
           resources: {}
       restartPolicy: Always
 status: {}
