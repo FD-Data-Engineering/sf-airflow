@@ -32,6 +32,14 @@ spec:
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
               value: "n"
+            - name: POSTGRES_DB
+              value: airflow
+            - name: POSTGRES_PASSWORD
+              value: airflow
+            - name: POSTGRES_USER
+              value: airflow
+            - name: REDIS_PASSWORD
+              value: redispass
           image: jpacerqueira83/docker_airflow:latest
           name: webserver
           ports:

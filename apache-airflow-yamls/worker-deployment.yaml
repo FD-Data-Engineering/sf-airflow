@@ -33,6 +33,14 @@ spec:
               value: Celery
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+            - name: POSTGRES_DB
+              value: airflow
+            - name: POSTGRES_PASSWORD
+              value: airflow
+            - name: POSTGRES_USER
+              value: airflow
+            - name: REDIS_PASSWORD
+              value: redispass
           image: jpacerqueira83/docker_airflow:latest
           name: worker
           resources: {}
