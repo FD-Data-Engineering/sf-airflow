@@ -39,6 +39,8 @@ spec:
               value: airflow
             - name: POSTGRES_USER
               value: airflow
+            - name: POSTGRES_ADMIN_PASSWORD
+              value: airflow
             - name: REDIS_PASSWORD
               value: redispass
           image: jpacerqueira83/docker_airflow:latest
