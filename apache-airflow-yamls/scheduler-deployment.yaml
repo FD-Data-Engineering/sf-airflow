@@ -34,11 +34,13 @@ spec:
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
               value: "n"
-            - name: POSTGRES_DB
+            - name: POSTGRESQL_DATABASE
               value: airflow
-            - name: POSTGRES_PASSWORD
+            - name: POSTGRESQL_PASSWORD
               value: airflow
-            - name: POSTGRES_USER
+            - name: POSTGRESQL_USER
+              value: airflow
+            - name: POSTGRESQL_ADMIN_PASSWORD
               value: airflow
             - name: REDIS_PASSWORD
               value: redispass
