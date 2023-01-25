@@ -55,8 +55,8 @@ spec:
               mountPath: /usr/local/airflow/dags
             - name: logs-pv
               mountPath: /usr/local/airflow/logs
-            - name: spark_scripts-pv
-              mountPath: /usr/local/airflow/spark_scripts
+            - name: spark-scripts-pv
+              mountPath: /usr/local/airflow/spark-scripts
             - name: downloads-pv
               mountPath: /usr/local/airflow/downloads
             - name: plugins-pv
@@ -75,7 +75,7 @@ spec:
         - name: downloads-pv
           persistentVolumeClaim:
             claimName: downloads-pvc
-        - name: spark_scripts-pv
+        - name: spark-scripts-pv
           persistentVolumeClaim:
-            claimName: spark_scripts-pvc
+            claimName: spark-scripts-pvc
 status: {}
