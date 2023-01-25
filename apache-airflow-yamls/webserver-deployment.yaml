@@ -7,9 +7,9 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      deploy: airflow
-      name: airflow
-      component: webserver
+      io.kompose.service: webserver
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
