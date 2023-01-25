@@ -42,7 +42,7 @@ spec:
                 configMapKeyRef:
                   name: airflow-config
                   key: executor
-          image: docker.io/thescomcontainers/airflow:1.0.1
+          image: docker.io/thescomcontainers/airflow:1.0.2
           name: flower
           ports:
             - containerPort: 5555
