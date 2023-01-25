@@ -51,26 +51,31 @@ spec:
           name: scheduler
           resources: {}
           volumeMounts:
-            - mountPath: /usr/local/airflow/dags
-              name: scheduler-claim0
-            - mountPath: /usr/local/airflow/plugins
-              name: scheduler-claim1
-            - mountPath: /usr/local/airflow/spark_scripts
-              name: scheduler-claim2
-            - mountPath: /usr/local/airflow/downloads
-              name: downloads
+            - name: dags-pv
+              mountPath: /usr/local/airflow/dags
+            - name: logs-pv
+              mountPath: /usr/local/airflow/logs
+            - name: spark_scripts-pv
+              mountPath: /usr/local/airflow/spark_scripts
+            - name: downloads-pv
+              mountPath: /usr/local/airflow/downloads
+            - name: plugins-pv
+              mountPath: /usr/local/airflow/plugins
       restartPolicy: Always
       volumes:
-        - name: scheduler-claim0
+        - name: dags-pv
           persistentVolumeClaim:
-            claimName: scheduler-claim0
-        - name: scheduler-claim1
+            claimName: dags-pvc
+        - name: logs-pv
           persistentVolumeClaim:
-            claimName: scheduler-claim1
-        - name: scheduler-claim2
+            claimName: logs-pvc
+        - name: plugins-pv
           persistentVolumeClaim:
-            claimName: scheduler-claim2
-        - name: downloads
+            claimName: plugins-pvc
+        - name: downloads-pv
           persistentVolumeClaim:
-            claimName: downloads
+            claimName: downloads-pvc
+        - name: spark_scripts-pv
+          persistentVolumeClaim:
+            claimName: spark_scripts-pvc
 status: {}
