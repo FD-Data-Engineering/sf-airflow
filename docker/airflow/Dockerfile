@@ -65,7 +65,6 @@ RUN groupadd -g $AIRFLOW_GID $AIRFLOW_GNAME && useradd -u $AIRFLOW_UID -g $AIRFL
     software-properties-common 
     # cronRUN ln -fs /usr/share/zoneinfo/GMT+1 /etc/localtime#Expose notebook cronjobs
 
-
 RUN set -ex \
     && buildDeps=' \
     freetds-dev \
@@ -110,7 +109,6 @@ RUN set -ex \
     /usr/share/doc \
     /usr/share/doc-base
 
-
 COPY script/entrypoint.sh /entrypoint.sh
 COPY config/airflow.cfg ${AIRFLOW_USER_HOME}/airflow.cfg
 
@@ -118,7 +116,9 @@ EXPOSE 8080 5555 8793
 
 RUN mkdir -p $AIRFLOW_USER_HOME && \
     chown $AIRFLOW_USER:$AIRFLOW_GNAME $AIRFLOW_USER_HOME && \
-    chmod -R 775 $AIRFLOW_USER_HOME
+    # chmod -R 775 $AIRFLOW_USER_HOME
+    chgrp -R 0 $AIRFLOW_USER_HOME && \
+    chmod -R g=u $AIRFLOW_USER_HOME
 
 USER $AIRFLOW_USER
 WORKDIR ${AIRFLOW_USER_HOME}
