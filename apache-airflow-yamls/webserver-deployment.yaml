@@ -45,7 +45,7 @@ spec:
                   key: executor
             - name: REDIS_PASSWORD
               value: redispass
-          image: docker.io/thescomcontainers/airflow:latest
+          image: docker.io/thescomcontainers/airflow:1.0.0
           name: webserver
           ports:
             - containerPort: 8080

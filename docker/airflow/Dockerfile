@@ -2,7 +2,6 @@ FROM puckel/docker-airflow:latest
 #FROM puckel/docker-airflow:1.10.4
 
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
-ENV AIRFLOW_HOME=$AIRFLOW_USER_HOME
 ENV PYTHONPATH=$PYTHONPATH:${AIRFLOW_USER_HOME}
 
 # Python packages required for th Selenium Plugin
@@ -17,5 +16,7 @@ RUN pip install docker && \
 RUN groupadd --gid 999 docker \
    && usermod -aG docker airflow 
 USER airflow
+
+RUN chown -R airflow: ${AIRFLOW_USER_HOME}
 
 RUN mkdir downloads
