@@ -1,7 +1,8 @@
-FROM puckel/docker-airflow:1.10.9
+FROM puckel/docker-airflow:latest
 #FROM puckel/docker-airflow:1.10.4
 
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
+ENV AIRFLOW_HOME=$AIRFLOW_USER_HOME
 ENV PYTHONPATH=$PYTHONPATH:${AIRFLOW_USER_HOME}
 
 # Python packages required for th Selenium Plugin
