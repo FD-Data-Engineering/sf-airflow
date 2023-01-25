@@ -23,6 +23,7 @@ spec:
       labels:
         io.kompose.service: flower
     spec:
+      serviceAccountName: airflow-scheduler
       containers:
         - args:
             - flower

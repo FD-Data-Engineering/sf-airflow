@@ -24,6 +24,7 @@ spec:
       labels:
         io.kompose.service: webserver
     spec:
+      serviceAccountName: airflow-scheduler
       containers:
         - env:
             - name: EXECUTOR
