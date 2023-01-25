@@ -3,8 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: webserver-claim1
-  name: webserver-claim1
+    io.kompose.service: plugins-pvc
+  name: plugins-pvc
 spec:
   accessModes:
     - ReadWriteOnce

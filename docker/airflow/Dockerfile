@@ -16,6 +16,9 @@ ARG AIRFLOW_VERSION=2.5.1
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
+ARG AIRFLOW_USER="airflow"
+ARG AIRFLOW_UID="1000"
+ARG AIRFLOW_GID="100"
 ENV AIRFLOW_HOME=${AIRFLOW_USER_HOME}
 
 # Define en_US.
@@ -29,6 +32,11 @@ ENV LC_MESSAGES en_US.UTF-8
 # ENV GUNICORN_CMD_ARGS --log-level WARNING
 
 USER root
+
+RUN mkdir $AIRFLOW_USER_HOME && \
+    useradd -ms /bin/bash -u "$AIRFLOW_UID" airflow && \
+    chown $AIRFLOW_USER:$AIRFLOW_GID $AIRFLOW_USER_HOME && \
+    chmod -R 777 /usr/local/airflow
 
 RUN set -ex \
     && buildDeps=' \
@@ -55,7 +63,7 @@ RUN set -ex \
     && sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
     && locale-gen \
     && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
-    && useradd -ms /bin/bash -d ${AIRFLOW_USER_HOME} airflow \
+    # && useradd -ms /bin/bash -d ${AIRFLOW_USER_HOME} airflow \
     && pip install -U pip setuptools wheel \
     && pip install pytz \
     && pip install pyOpenSSL \
@@ -75,8 +83,6 @@ RUN set -ex \
     /usr/share/doc \
     /usr/share/doc-base
 
-RUN chown -R airflow: ${AIRFLOW_USER_HOME}
-RUN chmod -R 775 ${AIRFLOW_USER_HOME}
 
 COPY script/entrypoint.sh /entrypoint.sh
 COPY config/airflow.cfg ${AIRFLOW_USER_HOME}/airflow.cfg
