@@ -2,7 +2,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: airflow
-  namespace: "airflow"
+  namespace: "dev-sf-deploy-test"
 spec:
   replicas: 1
   selector:
