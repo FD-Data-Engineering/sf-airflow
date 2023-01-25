@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: airflow-config
 data:
-  sql_alchemy_conn: "postgresql://airflow:airflow.@postgres:5432/airflow"
+  sql_alchemy_conn: "postgresql://airflow:airflow.@postgres:5432/master"
   executor: "KubernetesExecutor"

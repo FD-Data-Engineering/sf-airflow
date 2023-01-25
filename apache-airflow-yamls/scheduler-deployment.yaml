@@ -47,7 +47,7 @@ spec:
                   key: executor
             - name: REDIS_PASSWORD
               value: redispass
-          image: "apache/airflow:2.2.4"
+          image: jpacerqueira83/docker_airflow:latest
           name: scheduler
           resources: {}
           volumeMounts:
