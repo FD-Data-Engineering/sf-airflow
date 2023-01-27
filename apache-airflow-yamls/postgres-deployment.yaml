@@ -47,5 +47,5 @@ spec:
       volumes:
         - name: postgres-pv
           persistentVolumeClaim:
-            claimName: postgres-pvcs
+            claimName: postgres-pvc
 status: {}
