@@ -27,10 +27,14 @@ spec:
       serviceAccountName: apache-airflow-scheduler
       containers:
         - env:
-            - name: postgres
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
+            - name: POSTGRES_DB
+              value: airflow
+            - name: POSTGRES_PASSWORD
+              value: airflow
+            - name: POSTGRES_USER
+              value: airflow
+            - name: POSTGRES_ADMIN_PASSWORD
+              value: airflow
           image: docker.io/thescomcontainers/postgresql13:1.0.0
           name: postgres
           ports:
