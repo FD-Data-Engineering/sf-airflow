@@ -3,10 +3,9 @@ kind: Pod
 metadata:
   name: Airflow-init-pod
   namespace: dev-sf-deploy-test
-labels:
-  app: webserver
-namespace: dev-sf-deploy-test
-
+  labels:
+    io.kompose.service: webserver
+    name: webserver
 spec:
   containers:
     - name: webserver
