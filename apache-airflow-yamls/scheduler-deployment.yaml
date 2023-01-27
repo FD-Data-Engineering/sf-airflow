@@ -53,7 +53,7 @@ spec:
               "sh",
               "-c",
               "airflow list_users || (airflow db init
-              && airflow users create --role Admin --username airflow --password airflow -e airflow@airflow.com -f airflow -l airflow)",
+              && airflow users  create --role Admin --username Paul --email pkwame@firstderivatives.com --firstname Paul --lastname Kwame --password testP@ss)",
             ]
           resources: {}
           volumeMounts:
