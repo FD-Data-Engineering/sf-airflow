@@ -24,84 +24,50 @@ spec:
       labels:
         io.kompose.service: webserver
   spec:
-      serviceAccountName: apache-airflow-scheduler
-      containers:
-        - env:
-            - name: EXECUTOR
-              value: Celery
-            - name: FERNET_KEY
-              value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-            - name: LOAD_EX
-              value: "n"
-            - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-              valueFrom:
-                configMapKeyRef:
-                  name: apache-airflow-config
-                  key: sql_alchemy_conn
-            - name: AIRFLOW__CORE__EXECUTOR
-              valueFrom:
-                configMapKeyRef:
-                  name: apache-airflow-config
-                  key: executor
-            - name: REDIS_PASSWORD
-              value: redispass
-          image: docker.io/thescomcontainers/airflow:1.0.0
-          name: webserver
-          ports:
-            - containerPort: 8080
-  # spec:
-  #   selector:
-  #     matchLabels:
-  #       io.kompose.service: scheduler
-  #   strategy:
-  #     type: Recreate
-  #   template:
-  #     metadata:
-  #       annotations:
-  #         kompose.cmd: kompose convert -f docker-compose.yml
-  #         kompose.version: 1.26.1 (a9d05d509)
-  #       creationTimestamp: null
-  #       labels:
-  #         io.kompose.service: scheduler
-      spec:
-    # serviceAccountName: apache-airflow-scheduler
-    # containers:
-    #   - args:
-    #       - scheduler
-    #     env:
-    #       - name: EXECUTOR
-    #         value: Celery
-    #       - name: FERNET_KEY
-    #         value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-    #       - name: LOAD_EX
-    #         value: "n"
-    #       - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-    #         valueFrom:
-    #           configMapKeyRef:
-    #             name: apache-airflow-config
-    #             key: sql_alchemy_conn
-    #       - name: AIRFLOW__CORE__EXECUTOR
-    #         valueFrom:
-    #           configMapKeyRef:
-    #             name: apache-airflow-config
-    #             key: executor
-    #       - name: REDIS_PASSWORD
-    #         value: redispass
-        image: docker.io/thescomcontainers/airflow:1.0.0
-        name: scheduler
-        command: ["sh", "-c", "airflow list_users || (airflow db init)"]
-        resources: {}
-        volumeMounts:
-          - name: dags-pv
-            mountPath: /usr/local/airflow/dags
-          - name: logs-pv
-            mountPath: /usr/local/airflow/logs
-          - name: spark-scripts-pv
-            mountPath: /usr/local/airflow/spark-scripts
-          - name: downloads-pv
-            mountPath: /usr/local/airflow/downloads
-          - name: plugins-pv
-            mountPath: /usr/local/airflow/plugins
+    serviceAccountName: apache-airflow-scheduler
+    containers:
+      - env:
+          - name: EXECUTOR
+            value: Celery
+          - name: FERNET_KEY
+            value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+          - name: LOAD_EX
+            value: 'n'
+          - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+            valueFrom:
+              configMapKeyRef:
+                name: apache-airflow-config
+                key: sql_alchemy_conn
+          - name: AIRFLOW__CORE__EXECUTOR
+            valueFrom:
+              configMapKeyRef:
+                name: apache-airflow-config
+                key: executor
+          - name: REDIS_PASSWORD
+            value: redispass
+        image: 'docker.io/thescomcontainers/airflow:1.0.0'
+        name: webserver
+        ports:
+          - containerPort: 8080
+    spec:
+      image: 'docker.io/thescomcontainers/airflow:1.0.0'
+      name: scheduler
+      command:
+        - sh
+        - '-c'
+        - airflow list_users || (airflow db init)
+      resources: {}
+      volumeMounts:
+        - name: dags-pv
+          mountPath: /usr/local/airflow/dags
+        - name: logs-pv
+          mountPath: /usr/local/airflow/logs
+        - name: spark-scripts-pv
+          mountPath: /usr/local/airflow/spark-scripts
+        - name: downloads-pv
+          mountPath: /usr/local/airflow/downloads
+        - name: plugins-pv
+          mountPath: /usr/local/airflow/plugins
   restartPolicy: Always
   volumes:
     - name: dags-pv
