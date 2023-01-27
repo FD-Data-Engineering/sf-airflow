@@ -33,7 +33,7 @@ spec:
               value: airflow
             - name: POSTGRES_ADMIN_PASSWORD
               value: airflow
-          image: docker.io/thescomcontainers/postgresql13:latest
+          image: docker.io/thescomcontainers/postgresql13:1.0.0
           name: postgres
           resources: {}
       restartPolicy: Always

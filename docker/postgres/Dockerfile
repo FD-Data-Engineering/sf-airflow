@@ -46,7 +46,18 @@ RUN yum install -y centos-release-scl-rh && \
 	INSTALL_PKGS="$INSTALL_PKGS rh-postgresql13-pgaudit" && \
 	yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
 	rpm -V $INSTALL_PKGS && \
+	yum update -y && \
+	yum -y install wget make gcc openssl-devel bzip2-devel && \
+	cd /tmp/ && \
+    wget https://www.python.org/ftp/python/3.8.7/Python-3.8.7.tgz && \
+	tar xzf Python-3.8.7.tgz && \
+	cd Python-3.8.7 && \
+	./configure --enable-optimizations && \
+	make altinstall && \
+	ln -sfn /usr/local/bin/python3.8 /usr/bin/python3.8 && \
+	ln -sfn /usr/local/bin/pip3.8 /usr/bin/pip3.8 && \
 	yum -y clean all --enablerepo='*' && \
+	python3.8 -V && \
 	localedef -f UTF-8 -i en_US en_US.UTF-8 && \
 	test "$(id postgres)" = "uid=26(postgres) gid=26(postgres) groups=26(postgres)" && \
 	mkdir -p /var/lib/pgsql/data && \
