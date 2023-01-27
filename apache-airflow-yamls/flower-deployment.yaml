@@ -44,6 +44,12 @@ spec:
                   key: executor
           image: docker.io/thescomcontainers/airflow:1.0.0
           name: flower
+          command: [
+              "sh",
+              "-c",
+              "airflow list_users || (airflow db init
+              && airflow create_user --role Admin --username airflow --password airflow -e airflow@airflow.com -f airflow -l airflow)",
+            ]
           ports:
             - containerPort: 5555
           resources: {}

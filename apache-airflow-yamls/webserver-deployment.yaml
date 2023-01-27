@@ -47,6 +47,12 @@ spec:
               value: redispass
           image: docker.io/thescomcontainers/airflow:1.0.0
           name: webserver
+          command: [
+              "sh",
+              "-c",
+              "airflow list_users || (airflow db init
+              && airflow create_user --role Admin --username airflow --password airflow -e airflow@airflow.com -f airflow -l airflow)",
+            ]
           ports:
             - containerPort: 8080
           resources: {}

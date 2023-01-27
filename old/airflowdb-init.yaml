@@ -17,6 +17,6 @@ spec:
       command: [
           "sh",
           "-c",
-          "airflow list_users || (airflow initdb
+          "airflow list_users || (airflow db init
           && airflow create_user --role Admin --username airflow --password airflow -e airflow@airflow.com -f airflow -l airflow)",
         ]
