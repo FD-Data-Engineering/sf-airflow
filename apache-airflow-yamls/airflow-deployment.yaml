@@ -23,66 +23,86 @@ spec:
       creationTimestamp: null
       labels:
         io.kompose.service: webserver
-  spec:
-    serviceAccountName: apache-airflow-scheduler
-    containers:
-      - env:
-          - name: EXECUTOR
-            value: Celery
-          - name: FERNET_KEY
-            value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-          - name: LOAD_EX
-            value: 'n'
-          - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-            valueFrom:
-              configMapKeyRef:
-                name: apache-airflow-config
-                key: sql_alchemy_conn
-          - name: AIRFLOW__CORE__EXECUTOR
-            valueFrom:
-              configMapKeyRef:
-                name: apache-airflow-config
-                key: executor
-          - name: REDIS_PASSWORD
-            value: redispass
-        image: 'docker.io/thescomcontainers/airflow:1.0.0'
-        name: webserver
-        ports:
-          - containerPort: 8080
     spec:
-      image: 'docker.io/thescomcontainers/airflow:1.0.0'
-      name: scheduler
-      command:
-        - sh
-        - '-c'
-        - airflow list_users || (airflow db init)
-      resources: {}
-      volumeMounts:
+      serviceAccountName: apache-airflow-scheduler
+      containers:
+        - name: webserver
+          image: docker.io/thescomcontainers/airflow:1.0.0
+        - env:
+            - name: EXECUTOR
+              value: Celery
+            - name: FERNET_KEY
+              value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+            - name: LOAD_EX
+              value: "n"
+            - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+              valueFrom:
+                configMapKeyRef:
+                  name: apache-airflow-config
+                  key: sql_alchemy_conn
+            - name: AIRFLOW__CORE__EXECUTOR
+              valueFrom:
+                configMapKeyRef:
+                  name: apache-airflow-config
+                  key: executor
+            - name: REDIS_PASSWORD
+              value: redispass
+          volumeMounts:
+            - name: dags-pv
+              mountPath: /usr/local/airflow/dags
+            - name: logs-pv
+              mountPath: /usr/local/airflow/logs
+            - name: spark-scripts-pv
+              mountPath: /usr/local/airflow/spark-scripts
+            - name: downloads-pv
+              mountPath: /usr/local/airflow/downloads
+            - name: plugins-pv
+              mountPath: /usr/local/airflow/plugins
+          command:
+            - airflow
+          args:
+            - scheduler
+        - name: airflow-webserver
+        - env:
+            - name: EXECUTOR
+              value: Celery
+            - name: FERNET_KEY
+              value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+            - name: LOAD_EX
+              value: "n"
+            - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+              valueFrom:
+                configMapKeyRef:
+                  name: apache-airflow-config
+                  key: sql_alchemy_conn
+            - name: AIRFLOW__CORE__EXECUTOR
+              valueFrom:
+                configMapKeyRef:
+                  name: apache-airflow-config
+                  key: executor
+            - name: REDIS_PASSWORD
+              value: redispass
+          image: docker.io/thescomcontainers/airflow:1.0.0
+          command: ["sh", "-c", "airflow list_users || (airflow db init)"]
+          ports:
+            - containerPort: 8080
+          args:
+            - webserver
+      restartPolicy: Always
+      volumes:
         - name: dags-pv
-          mountPath: /usr/local/airflow/dags
+          persistentVolumeClaim:
+            claimName: dags-pvc
         - name: logs-pv
-          mountPath: /usr/local/airflow/logs
-        - name: spark-scripts-pv
-          mountPath: /usr/local/airflow/spark-scripts
-        - name: downloads-pv
-          mountPath: /usr/local/airflow/downloads
+          persistentVolumeClaim:
+            claimName: logs-pvc
         - name: plugins-pv
-          mountPath: /usr/local/airflow/plugins
-  restartPolicy: Always
-  volumes:
-    - name: dags-pv
-      persistentVolumeClaim:
-        claimName: dags-pvc
-    - name: logs-pv
-      persistentVolumeClaim:
-        claimName: logs-pvc
-    - name: plugins-pv
-      persistentVolumeClaim:
-        claimName: plugins-pvc
-    - name: downloads-pv
-      persistentVolumeClaim:
-        claimName: downloads-pvc
-    - name: spark-scripts-pv
-      persistentVolumeClaim:
-        claimName: spark-scripts-pvc
+          persistentVolumeClaim:
+            claimName: plugins-pvc
+        - name: downloads-pv
+          persistentVolumeClaim:
+            claimName: downloads-pvc
+        - name: spark-scripts-pv
+          persistentVolumeClaim:
+            claimName: spark-scripts-pvc
 status: {}
