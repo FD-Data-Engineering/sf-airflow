@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  namespace: dev-sf-deploy-test
   name: Airflow-init-pod
-  labels:
+labels:
   app: Airflow
+namespace: dev-sf-deploy-test
+
 spec:
   containers:
     - name: airflow-container
