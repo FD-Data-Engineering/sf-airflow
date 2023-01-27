@@ -29,7 +29,7 @@ spec:
         - env:
             - name: postgres
               valueFrom:
-                configMapRef:
+                configMapKeyRef:
                   name: postgres-config
           image: docker.io/thescomcontainers/postgresql13:1.0.0
           name: postgres
