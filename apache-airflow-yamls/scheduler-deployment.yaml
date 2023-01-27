@@ -24,7 +24,7 @@ spec:
       labels:
         io.kompose.service: scheduler
     spec:
-      serviceAccountName: airflow-scheduler
+      serviceAccountName: apache-airflow-scheduler
       containers:
         - args:
             - scheduler
