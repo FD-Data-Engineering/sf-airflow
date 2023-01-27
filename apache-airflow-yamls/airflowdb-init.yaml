@@ -1,33 +1,21 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
   namespace: dev-sf-deploy-test
-  annotations:
-    kompose.cmd: kompose convert -f docker-compose.yml
-    kompose.version: 1.26.1 (a9d05d509)
+  name: Airflow-init-pod
   labels:
-    io.kompose.service: init
-  name: init
+  app: Airflow
 spec:
   containers:
-    - args:
-        - -c
-        - airflow list_users || (airflow initdb && airflow create_user --role Admin --username airflow --password airflow -e airflow@airflow.com -f airflow -l airflow)
-      command:
-        - /bin/bash
-      env:
-        - name: AIRFLOW__CORE__EXECUTOR
-          value: CeleryExecutor
-        - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-          valueFrom:
-            configMapKeyRef:
-              name: apache-airflow-config
-              key: sql_alchemy_conn
-          #value: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-        - name: AIRFLOW__WEBSERVER__RBAC
-          value: "True"
+    - name: airflow-container
       image: docker.io/thescomcontainers/airflow:1.0.0
-      name: init
-      resources: {}
-  restartPolicy: OnFailure
-  status: {}
+      command: ["sh", "-c", "echo Airflow is running! && sleep 3600"]
+      initContainers:
+    - name: init-db
+      image: docker.io/thescomcontainers/airflow:1.0.0
+      command: [
+          "sh",
+          "-c",
+          "airflow list_users || (airflow initdb
+          && airflow create_user --role Admin --username airflow --password airflow -e airflow@airflow.com -f airflow -l airflow)",
+        ]
