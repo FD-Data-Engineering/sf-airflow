@@ -7,7 +7,7 @@ spec:
   type: NodePort
   selector:
     deploy: airflow
-    name: airflow
+    name: apache-airflow
     component: webserver
   ports:
     - name: airflow-ui
