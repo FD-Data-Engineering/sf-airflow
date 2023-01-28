@@ -61,7 +61,6 @@ spec:
               mountPath: /usr/local/airflow/downloads
             - name: plugins-pv
               mountPath: /usr/local/airflow/plugins
-        #restartPolicy: Always
         - env:
             - name: EXECUTOR
               value: Celery
@@ -85,18 +84,6 @@ spec:
           name: scheduler
           command: ["sh", "-c", "airflow list_users || (airflow db init)"]
           resources: {}
-          # volumeMounts:
-          #   - name: dags-pv
-          #     mountPath: /usr/local/airflow/dags
-          #   - name: logs-pv
-          #     mountPath: /usr/local/airflow/logs
-          #   - name: spark-scripts-pv
-          #     mountPath: /usr/local/airflow/spark-scripts
-          #   - name: downloads-pv
-          #     mountPath: /usr/local/airflow/downloads
-          #   - name: plugins-pv
-          #     mountPath: /usr/local/airflow/plugins
-      #restartPolicy: Always
       volumes:
         - name: dags-pv
           persistentVolumeClaim:
