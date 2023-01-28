@@ -47,7 +47,12 @@ spec:
               value: redispass
           image: docker.io/thescomcontainers/airflow:2.0.0
           name: scheduler
-          command: ["sh", "-c", "airflow list_users || (airflow db init)"]
+          command: [
+              "sh",
+              "-c",
+              "airflow list_users || (airflow db init
+              && airflow scheduler)",
+            ]
           resources: {}
           volumeMounts:
             - name: dags-pv
