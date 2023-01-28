@@ -26,8 +26,6 @@ spec:
     spec:
       serviceAccountName: apache-airflow-scheduler
       containers:
-        - name: webserver
-          image: docker.io/thescomcontainers/airflow:1.0.0
         - env:
             - name: EXECUTOR
               value: Celery
@@ -47,6 +45,11 @@ spec:
                   key: executor
             - name: REDIS_PASSWORD
               value: redispass
+          image: docker.io/thescomcontainers/airflow:1.0.0
+          name: webserver
+          ports:
+            - containerPort: 8080
+          resources: {}
           volumeMounts:
             - name: dags-pv
               mountPath: /usr/local/airflow/dags
@@ -58,11 +61,7 @@ spec:
               mountPath: /usr/local/airflow/downloads
             - name: plugins-pv
               mountPath: /usr/local/airflow/plugins
-          command:
-            - airflow
-          args:
-            - scheduler
-        - name: airflow-webserver
+        #restartPolicy: Always
         - env:
             - name: EXECUTOR
               value: Celery
@@ -83,12 +82,21 @@ spec:
             - name: REDIS_PASSWORD
               value: redispass
           image: docker.io/thescomcontainers/airflow:1.0.0
+          name: scheduler
           command: ["sh", "-c", "airflow list_users || (airflow db init)"]
-          ports:
-            - containerPort: 8080
-          args:
-            - webserver
-      restartPolicy: Always
+          resources: {}
+          volumeMounts:
+            - name: dags-pv
+              mountPath: /usr/local/airflow/dags
+            - name: logs-pv
+              mountPath: /usr/local/airflow/logs
+            - name: spark-scripts-pv
+              mountPath: /usr/local/airflow/spark-scripts
+            - name: downloads-pv
+              mountPath: /usr/local/airflow/downloads
+            - name: plugins-pv
+              mountPath: /usr/local/airflow/plugins
+      #restartPolicy: Always
       volumes:
         - name: dags-pv
           persistentVolumeClaim:
