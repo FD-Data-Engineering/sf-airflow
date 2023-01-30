@@ -105,7 +105,7 @@ spec:
               value: CeleryExecutor
             - name: FLOWER_PORT
               value: "5555"
-            - name: FLOWER_BASIC_AUTH
+            - name: AIRFLOW__CELERY__FLOWER_BASIC_AUTH
               value: admin:admin
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
