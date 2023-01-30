@@ -28,7 +28,7 @@ spec:
       containers:
         - env:
             - name: EXECUTOR
-              value: CeleryKubernetesExecutor
+              value: CeleryExecutor
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
@@ -45,7 +45,7 @@ spec:
                   key: executor
             - name: REDIS_PASSWORD
               value: redispass
-          image: docker.io/thescomcontainers/airflow:2.0.1
+          image: docker.io/thescomcontainers/airflow:2.0.2
           name: scheduler
           command: [
               "sh",
@@ -67,7 +67,7 @@ spec:
               mountPath: /usr/local/airflow/plugins
         - env:
             - name: EXECUTOR
-              value: CeleryKubernetesExecutor
+              value: CeleryExecutor
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
@@ -84,7 +84,7 @@ spec:
                   key: executor
             - name: REDIS_PASSWORD
               value: redispass
-          image: docker.io/thescomcontainers/airflow:2.0.1
+          image: docker.io/thescomcontainers/airflow:2.0.2
           name: webserver
           ports:
             - containerPort: 8080
