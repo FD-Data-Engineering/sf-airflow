@@ -53,9 +53,6 @@ spec:
               "airflow list_users || (airflow db init
               && airflow scheduler)",
             ]
-          airflow:
-            config:
-              AIRFLOW__KUBERNETES__KUBE_CLIENT_REQUEST_ARGS: '{\"_request_timeout\":60}'
           resources: {}
           volumeMounts:
             - name: dags-pv
