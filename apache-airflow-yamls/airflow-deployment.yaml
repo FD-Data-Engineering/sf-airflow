@@ -45,6 +45,8 @@ spec:
                   key: executor
             - name: REDIS_PASSWORD
               value: redispass
+            - name: AIRFLOW__KUBERNETES__KUBE_CLIENT_REQUEST_ARGS
+              value: '{\"_request_timeout\":[60,60]}'
           image: docker.io/thescomcontainers/airflow:2.0.1
           name: scheduler
           command: [
