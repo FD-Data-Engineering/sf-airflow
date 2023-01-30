@@ -24,9 +24,6 @@ spec:
         io.kompose.service: redis
     spec:
       containers:
-        - env:
-            - name: REDIS_PASSWORD
-              value: redispass
         - image: redis:5.0.5
           name: redis
           ports:
