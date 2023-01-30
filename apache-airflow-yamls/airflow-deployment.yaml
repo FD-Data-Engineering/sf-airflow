@@ -101,10 +101,10 @@ spec:
             - containerPort: 8080
           resources: {}
         - env:
-            - name: FLOWER_PORT
-              value: 5555
             - name: EXECUTOR
               value: CeleryExecutor
+            - name: FLOWER_PORT
+              value: 5555
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
