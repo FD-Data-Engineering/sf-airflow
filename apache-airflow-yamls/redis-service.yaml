@@ -1,19 +1,16 @@
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -f docker-compose.yml
-    kompose.version: 1.26.1 (a9d05d509)
-  creationTimestamp: null
-  labels:
-    io.kompose.service: redis
   name: redis
+  namespace: dev-sf-deploy-test
 spec:
+  type: NodePort
+  selector:
+    deploy: redis
+    name: redis
+    component: redis
   ports:
-    - name: "6379"
+    - name: redis
+      protocol: TCP
       port: 6379
       targetPort: 6379
-  selector:
-    io.kompose.service: redis
-status:
-  loadBalancer: {}
