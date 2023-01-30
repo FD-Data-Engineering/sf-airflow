@@ -26,6 +26,8 @@ spec:
       containers:
         - image: redis:5.0.5
           name: redis
+          ports:
+            - containerPort: 6379
           resources: {}
       restartPolicy: Always
 status: {}
