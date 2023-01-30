@@ -5,4 +5,4 @@ metadata:
 data:
   sql_alchemy_conn: "postgresql+psycopg2://airflow:airflow@postgres:5432/airflow"
   executor: "KubernetesExecutor"
-  AIRFLOW__KUBERNETES__KUBE_CLIENT_REQUEST_ARGS: '{\"_request_timeout\":[60,60]}'
+  AIRFLOW__KUBERNETES__KUBE_CLIENT_REQUEST_ARGS: ""
