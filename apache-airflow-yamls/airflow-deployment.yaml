@@ -127,8 +127,8 @@ spec:
           image: docker.io/thescomcontainers/airflow:2.0.1
           command: ["sh", "-c", "airflow list_users || (airflow celery flower)"]
           name: flower-service
-          ports:
-            - containerPort: 5555
+          # ports:
+          #   - containerPort: 5555
           resources: {}
       volumes:
         - name: dags-pv
