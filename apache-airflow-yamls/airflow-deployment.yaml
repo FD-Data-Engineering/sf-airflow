@@ -123,7 +123,7 @@ spec:
                   name: apache-airflow-config
                   key: airflow_web_sql_alchemy_conn
           image: docker.io/thescomcontainers/airflow:2.0.1
-          command: ["sh", "-c", "airflow list_users || (airflow flower)"]
+          command: ["sh", "-c", "airflow list_users || (airflow celery flower)"]
           name: flower
           ports:
             - containerPort: 5555
