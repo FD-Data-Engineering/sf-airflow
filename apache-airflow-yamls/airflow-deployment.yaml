@@ -103,7 +103,7 @@ spec:
         - env:
             - name: EXECUTOR
               value: CeleryExecutor
-            - name: FLOWER_PORT
+            - name: AIRFLOW__CELERY__FLOWER_PORT
               value: 5555
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
