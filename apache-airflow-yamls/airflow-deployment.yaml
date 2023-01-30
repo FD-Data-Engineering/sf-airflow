@@ -28,7 +28,7 @@ spec:
       containers:
         - env:
             - name: EXECUTOR
-              value: Celery
+              value: KubernetesExecutor
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
@@ -67,7 +67,7 @@ spec:
               mountPath: /usr/local/airflow/plugins
         - env:
             - name: EXECUTOR
-              value: Celery
+              value: KubernetesExecutor
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
