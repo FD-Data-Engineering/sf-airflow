@@ -45,7 +45,7 @@ spec:
                   key: executor
             - name: REDIS_PASSWORD
               value: redispass
-          image: docker.io/thescomcontainers/airflow:2.0.2
+          image: docker.io/thescomcontainers/airflow:2.0.1
           name: scheduler
           command: [
               "sh",
@@ -84,7 +84,7 @@ spec:
                   key: executor
             - name: REDIS_PASSWORD
               value: redispass
-          image: docker.io/thescomcontainers/airflow:2.0.2
+          image: docker.io/thescomcontainers/airflow:2.0.1
           name: webserver
           ports:
             - containerPort: 8080
