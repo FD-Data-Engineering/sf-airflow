@@ -76,7 +76,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: apache-airflow-config
-                  key: sql_alchemy_conn
+                  key: airflow_web_sql_alchemy_conn
             - name: AIRFLOW__CORE__EXECUTOR
               valueFrom:
                 configMapKeyRef:
