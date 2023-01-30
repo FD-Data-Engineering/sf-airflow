@@ -48,8 +48,6 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: redis_conn_id
-            # - name: REDIS_PASSWORD
-            #   value: redispass
           image: docker.io/thescomcontainers/airflow:2.0.1
           name: scheduler
           command: [
@@ -129,7 +127,7 @@ spec:
           name: flower
           ports:
             - containerPort: 5555
-              resources: {}
+          resources: {}
       volumes:
         - name: dags-pv
           persistentVolumeClaim:
