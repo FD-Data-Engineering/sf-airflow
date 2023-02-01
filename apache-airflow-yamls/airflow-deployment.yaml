@@ -149,7 +149,7 @@ spec:
             - name: GIT_SYNC_USERNAME
               value: "prasadgugulla9@gmail.com"
             - name: GIT_SYNC_PASSWORD
-              value: "Password@!"£456"
+              value: "Airflow12345"
           image: k8s.gcr.io/git-sync:v3.1.3
           name: git-sync
           resources: {}
