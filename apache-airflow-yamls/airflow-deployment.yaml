@@ -157,7 +157,7 @@ spec:
           name: flower
           ports:
             - containerPort: 5555
-        resources: {}
+          resources: {}
       volumes:
         - name: dags-pv
           persistentVolumeClaim:
