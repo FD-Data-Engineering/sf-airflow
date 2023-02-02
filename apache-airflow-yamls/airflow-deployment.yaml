@@ -147,7 +147,9 @@ spec:
             - name: GIT_SYNC_ONE_TIME
               value: "true"
             - name: GIT_SSH_KEY_SECRET_NAME
-              value: git-ssh-key
+              valueFrom:
+                secretKeyRef:
+                  key: git-ssh-key
             - name: GIT_DAGS_FOLDER_MOUNT_POINT
               value: /usr/local/airflow/dags
             - name: GITP_SYNC_RUN_AS_USER
