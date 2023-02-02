@@ -56,33 +56,7 @@ spec:
               "airflow list_users || (airflow db init
               && airflow scheduler)",
             ]
-          resources: {}
-        - env:
-            - name: GIT_SYNC_REPO
-              value: "https://github.com/FD-Data-Engineering/sf-airflow.git" ##repo-path-you-want-to-clone
-            - name: GIT_SYNC_BRANCH
-              value: "main" ##repo-branch
-            - name: GIT_SUBPATH
-              value: /docker-compose
-            - name: GIT_SYNC_ROOT
-              value: /git
-            - name: GIT_SYNC_DEST
-              value: "dags" ##path-where-you-want-to-clone
-            - name: GIT_SYNC_PERIOD
-              value: "10"
-            - name: GIT_SYNC_ONE_TIME
-              value: "true"
-            - name: GIT_SSH_KEY_SECRET_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: gitsshkey
-                  key: gitsshkey
-            - name: GIT_DAGS_FOLDER_MOUNT_POINT
-              value: /usr/local/airflow/dags
-            - name: GITP_SYNC_RUN_AS_USER
-              value: "65533"
-          image: k8s.gcr.io/git-sync:v3.1.3
-          name: git-sync           
+          resources: {}                 
           volumeMounts:
             - name: dags-pv
               mountPath: /usr/local/airflow/dags
@@ -94,6 +68,32 @@ spec:
               mountPath: /usr/local/airflow/downloads
             - name: plugins-pv
               mountPath: /usr/local/airflow/plugins
+        #- env:
+            #- name: GIT_SYNC_REPO
+             # value: "https://github.com/FD-Data-Engineering/sf-airflow.git" ##repo-path-you-want-to-clone
+            #- name: GIT_SYNC_BRANCH
+             # value: "main" ##repo-branch
+            #- name: GIT_SUBPATH
+             # value: /docker-compose
+            #- name: GIT_SYNC_ROOT
+             # value: /usr/local/airflow
+            #- name: GIT_SYNC_DEST
+             # value: "dags" ##path-where-you-want-to-clone
+            #- name: GIT_SYNC_PERIOD
+             # value: "10"
+            #- name: GIT_SYNC_ONE_TIME
+             # value: "true"
+            #- name: GIT_SSH_KEY_SECRET_NAME
+             # valueFrom:
+              #  secretKeyRef:
+               #   name: gitsshkey
+                #  key: gitsshkey
+            #- name: GIT_DAGS_FOLDER_MOUNT_POINT
+             # value: /usr/local/airflow/dags
+            #- name: GITP_SYNC_RUN_AS_USER
+             # value: "65533"
+          #image: k8s.gcr.io/git-sync:v3.1.3
+          #name: git-sync
         - env:
             - name: EXECUTOR
               value: CeleryExecutor
