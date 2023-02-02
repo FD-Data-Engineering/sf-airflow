@@ -81,7 +81,7 @@ spec:
               value: /usr/local/airflow/dags
             - name: GITP_SYNC_RUN_AS_USER
               value: "65533"
-          image: k8s.gcr.io/git-sync:v3.1.1
+          image: k8s.gcr.io/git-sync:v3.1.3
           name: git-sync           
           volumeMounts:
             - name: dags-pv
