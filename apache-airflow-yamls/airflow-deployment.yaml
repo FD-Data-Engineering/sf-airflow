@@ -149,7 +149,7 @@ spec:
             - name: GIT_SSH_KEY_SECRET_NAME
               valueFrom:
                 secretKeyRef:
-                  key: git-ssh-key
+                  key: gitsshkey
             - name: GIT_DAGS_FOLDER_MOUNT_POINT
               value: /usr/local/airflow/dags
             - name: GITP_SYNC_RUN_AS_USER
