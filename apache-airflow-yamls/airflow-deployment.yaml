@@ -150,6 +150,15 @@ spec:
               value: "prasadgugulla9@gmail.com"
             - name: GIT_SYNC_PASSWORD
               value: "Airflow12345"
+            - name: GIT_SSH_KEY_SECRET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: gitsshkey
+                  key: gitsshkey
+            - name: GIT_DAGS_FOLDER_MOUNT_POINT
+              value: /usr/local/airflow/dags
+            - name: GITP_SYNC_RUN_AS_USER
+              value: "65533"
           image: k8s.gcr.io/git-sync:v3.1.3
           name: git-sync
           resources: {}
