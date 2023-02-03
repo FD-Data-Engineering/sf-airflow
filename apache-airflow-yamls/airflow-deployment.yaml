@@ -87,11 +87,11 @@ spec:
               value: "prasadgugulla9@gmail.com"
             - name: GIT_SYNC_PASSWORD
               value: "Password@!"£456"
-            - name: GIT_SSH_KEY_SECRET_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: gitsshkey
-                  key: gitsshkey
+            #- name: GIT_SSH_KEY_SECRET_NAME
+             # valueFrom:
+              #  secretKeyRef:
+               #   name: gitsshkey
+                #  key: gitsshkey
             - name: GIT_DAGS_FOLDER_MOUNT_POINT
               value: /usr/local/airflow/dags
             - name: GITP_SYNC_RUN_AS_USER
