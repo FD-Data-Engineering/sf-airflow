@@ -40,9 +40,10 @@ RUN apt-get update -y && apt-get install -y apt-utils \
     wget
 RUN apt-get upgrade -y
 
-RUN wget https://github.com/openshift/okd/releases/download/4.5.0-0.okd-2020-07-14-153706-ga/openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz \
-&& tar -xvf openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz && \
-mv oc kubectl /usr/local/bin/
+RUN cd  /tmp \
+    && wget https://github.com/openshift/okd/releases/download/4.5.0-0.okd-2020-07-14-153706-ga/openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz \
+    && tar -xvf openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz && \
+    mv oc /usr/local/bin/
 
 
 RUN groupadd -g $AIRFLOW_GID $AIRFLOW_GNAME && useradd -u $AIRFLOW_UID -g $AIRFLOW_USER -G sudo -m -s /bin/bash $AIRFLOW_USER && \
