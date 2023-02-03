@@ -36,7 +36,8 @@ USER root
 
 RUN apt-get update -y && apt-get install -y apt-utils \
     sudo \
-    sed
+    sed \
+    wget
 RUN apt-get upgrade -y
 
 RUN groupadd -g $AIRFLOW_GID $AIRFLOW_GNAME && useradd -u $AIRFLOW_UID -g $AIRFLOW_USER -G sudo -m -s /bin/bash $AIRFLOW_USER && \
@@ -98,6 +99,9 @@ RUN set -ex \
     && pip install pyasn1 \
     && pip install apache-airflow[crypto,celery,postgres,hive,kubernetes,jdbc,mysql,ssh${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}]==${AIRFLOW_VERSION} \
     && pip install 'redis==3.2' \
+    && wget https://github.com/openshift/okd/releases/download/4.5.0-0.okd-2020-07-14-153706-ga/openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz \
+    && tar -xvf openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz \
+    && mv oc /usr/local/bin/ \
     && if [ -n "${PYTHON_DEPS}" ]; then pip install ${PYTHON_DEPS}; fi \
     && apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get autoremove -yqq --purge \
