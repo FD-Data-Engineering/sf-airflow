@@ -48,7 +48,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: redis_conn_id
-          image: docker.io/thescomcontainers/airflow:2.0.1
+          image: docker.io/thescomcontainers/airflow:2.1.1
           name: scheduler
           command: [
               "sh",
@@ -95,7 +95,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: redis_conn_id
-          image: docker.io/thescomcontainers/airflow:2.0.1
+          image: docker.io/thescomcontainers/airflow:2.1.1
           name: webserver
           ports:
             - containerPort: 8080
@@ -126,7 +126,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: airflow_web_sql_alchemy_conn
-          image: docker.io/thescomcontainers/airflow:2.0.1
+          image: docker.io/thescomcontainers/airflow:2.1.1
           command: ["sh", "-c", "airflow list_users || (airflow celery flower)"]
           name: flower
           ports:
