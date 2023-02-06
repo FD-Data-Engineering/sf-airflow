@@ -132,17 +132,6 @@ spec:
           ports:
             - containerPort: 5555
           resources: {}
-        - dags:
-            gitSync:
-              enabled: true
-              repo: git@github.com:FD-Data-Engineering/sf-airflow.git
-              branch: test
-              subPath: "docker-compose"
-              sshKeySecret: airflow-ssh-secret
-                secretKeyRef:
-                  name: airflow-ssh-secret
-                  key: airflow-ssh-secret
-          image: docker.io/thescomcontainers/airflow:2.1.2        
       volumes:
         - name: dags-pv
           persistentVolumeClaim:
