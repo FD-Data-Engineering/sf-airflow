@@ -142,6 +142,7 @@ spec:
                 secretKeyRef:
                   name: airflow-ssh-secret
                   key: airflow-ssh-secret
+          image: docker.io/thescomcontainers/airflow:2.1.2        
       volumes:
         - name: dags-pv
           persistentVolumeClaim:
