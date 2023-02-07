@@ -28,6 +28,10 @@ ENV LC_MESSAGES en_US.UTF-8
 # Disable noisy "Handling signal" log messages:
 # ENV GUNICORN_CMD_ARGS --log-level WARNING
 
+USER root
+
+RUN apt-get update && apt-get install -y git
+
 RUN set -ex \
     && buildDeps=' \
         git \
