@@ -7,7 +7,7 @@ metadata:
   creationTimestamp: null
   labels:
     io.kompose.service: webserver
-  name: airflow
+  name: scheduler
 spec:
   replicas: 1
   selector:
