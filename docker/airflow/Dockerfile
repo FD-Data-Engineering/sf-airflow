@@ -52,7 +52,6 @@ RUN set -ex \
         locales \
         wget \
         curl \
-        libssl-dev \
         python-pip \
         python3-pip \
         python3-pyqt5 \
@@ -74,6 +73,7 @@ RUN set -ex \
     && pip install -U pip setuptools wheel \
     && pip install pytz \
     && pip install pyOpenSSL \
+    && apt-get install libssl-dev \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
     && pip install apache-airflow[crypto,celery,postgres,hive,jdbc,mysql,ssh${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}]==${AIRFLOW_VERSION} \
