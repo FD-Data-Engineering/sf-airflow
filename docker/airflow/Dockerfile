@@ -44,7 +44,7 @@ RUN groupadd -g $AIRFLOW_GID $AIRFLOW_GNAME && useradd -u $AIRFLOW_UID -g $AIRFL
     sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
     sed -i /etc/sudoers -re 's/^root.*/root ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
     sed -i /etc/sudoers -re 's/^#includedir.*/## **Removed the include directive** ##"/g' && \
-    echo "airflow ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    echo "$AIRFLOW_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     echo "Customized the sudoers file for passwordless access to the airflow user!" && \
     echo $AIRFLOW_USER ; \
     su - $AIRFLOW_USER -c idRUN export DEBIAN_FRONTEND=noninteractive ; \
