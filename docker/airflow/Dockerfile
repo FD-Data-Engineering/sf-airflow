@@ -28,23 +28,19 @@ ENV LC_MESSAGES en_US.UTF-8
 # Disable noisy "Handling signal" log messages:
 # ENV GUNICORN_CMD_ARGS --log-level WARNING
 
-USER root
-
-RUN apt-get update && apt-get install -y git
-
 RUN set -ex \
     && buildDeps=' \
-        git \
-        freetds-dev \
-        libkrb5-dev \
-        libsasl2-dev \
-        libssl-dev \
-        libffi-dev \
-        libpq-dev \
+    freetds-dev \
+    libkrb5-dev \
+    libsasl2-dev \
+    libssl-dev \
+    libffi-dev \
+    libpq-dev \
     ' \
-    && apt-get update -yqq \
-    && apt-get upgrade -yqq \
-    && apt-get install -yqq --no-install-recommends \
+        && apt-get update -yqq \
+        && apt-get upgrade -yqq \
+        && apt-get install -yqq --no-install-recommends \
+        && apt-get install -y git \
         $buildDeps \
         freetds-bin \
         build-essential \
@@ -77,7 +73,6 @@ RUN set -ex \
     && pip install -U pip setuptools wheel \
     && pip install pytz \
     && pip install pyOpenSSL \
-    && apt-get install libssl-dev \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
     && pip install apache-airflow[crypto,celery,postgres,hive,jdbc,mysql,ssh${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}]==${AIRFLOW_VERSION} \
