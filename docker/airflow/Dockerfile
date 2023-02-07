@@ -17,10 +17,6 @@ ARG AIRFLOW_USER_HOME=/usr/local/airflow
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
 ENV AIRFLOW_HOME=${AIRFLOW_USER_HOME}
-ARG AIRFLOW_USER=airflow
-ARG AIRFLOW_UID=999
-ARG AIRFLOW_GID=999
-ARG AIRFLOW_GNAME=airflow
 
 # Define en_US.
 ENV LANGUAGE en_US.UTF-8
@@ -32,40 +28,6 @@ ENV LC_MESSAGES en_US.UTF-8
 # Disable noisy "Handling signal" log messages:
 # ENV GUNICORN_CMD_ARGS --log-level WARNING
 
-USER root
-
-RUN apt-get update -y && apt-get install -y apt-utils \
-    sudo \
-    sed \
-    wget
-RUN apt-get upgrade -y
-
-RUN groupadd -g $AIRFLOW_GID $AIRFLOW_GNAME && useradd -u $AIRFLOW_UID -g $AIRFLOW_USER -G sudo -m -s /bin/bash $AIRFLOW_USER && \
-    sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
-    sed -i /etc/sudoers -re 's/^root.*/root ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
-    sed -i /etc/sudoers -re 's/^#includedir.*/## **Removed the include directive** ##"/g' && \
-    echo "airflow ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
-    echo "Customized the sudoers file for passwordless access to the airflow user!" && \
-    echo $AIRFLOW_USER ; \
-    su - $AIRFLOW_USER -c idRUN export DEBIAN_FRONTEND=noninteractive ; \
-    apt-get update -y && apt-get install -y curl \
-    tzdata \
-    net-tools \
-    iptables \
-    iptables-persistent \
-    wget \
-    zip \
-    unzip \
-    tar \
-    bzip2 \ 
-    python-qt4 \
-    # python-pyside \
-    python-pip \
-    python3-pip \
-    python3-pyqt5 \
-    software-properties-common 
-    # cronRUN ln -fs /usr/share/zoneinfo/GMT+1 /etc/localtime#Expose notebook cronjobs
-
 RUN set -ex \
     && buildDeps=' \
     freetds-dev \
@@ -74,30 +36,46 @@ RUN set -ex \
     libssl-dev \
     libffi-dev \
     libpq-dev \
-    git \
     ' \
-    && apt-get update -yqq \
-    && apt-get upgrade -yqq \
-    && apt-get install -yqq --no-install-recommends \
-    $buildDeps \
-    freetds-bin \
-    build-essential \
-    default-libmysqlclient-dev \
-    apt-utils \
-    curl \
-    rsync \
-    netcat \
-    locales \
+        && apt-get update -yqq \
+        && apt-get upgrade -yqq \
+        && apt-get install -yqq --no-install-recommends \
+        && apt-get install -y git \
+        $buildDeps \
+        freetds-bin \
+        build-essential \
+        default-libmysqlclient-dev \
+        apt-utils \
+        curl \
+        rsync \
+        netcat \
+        locales \
+        wget \
+        curl \
+        python-pip \
+        python3-pip \
+        python3-pyqt5 \
+        tzdata \
+        net-tools \
+        iptables \
+        iptables-persistent \
+        wget \
+        zip \
+        unzip \
+        tar \
+        bzip2 \ 
+        python-qt4 \
+        software-properties-common \
     && sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
     && locale-gen \
     && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
+    && useradd -ms /bin/bash -d ${AIRFLOW_USER_HOME} airflow \
     && pip install -U pip setuptools wheel \
     && pip install pytz \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
-    && pip install markupsafe==2.0.1 \
     && pip install pyasn1 \
-    && pip install apache-airflow[crypto,celery,postgres,hive,kubernetes,jdbc,mysql,ssh${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}]==${AIRFLOW_VERSION} \
+    && pip install apache-airflow[crypto,celery,postgres,hive,jdbc,mysql,ssh${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}]==${AIRFLOW_VERSION} \
     && pip install 'redis==3.2' \
     && wget https://github.com/openshift/okd/releases/download/4.5.0-0.okd-2020-07-14-153706-ga/openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz \
     && tar -xvf openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz \
@@ -107,25 +85,24 @@ RUN set -ex \
     && apt-get autoremove -yqq --purge \
     && apt-get clean \
     && rm -rf \
-    /var/lib/apt/lists/* \
-    /tmp/* \
-    /var/tmp/* \
-    /usr/share/man \
-    /usr/share/doc \
-    /usr/share/doc-base
+        /var/lib/apt/lists/* \
+        /tmp/* \
+        /var/tmp/* \
+        /usr/share/man \
+        /usr/share/doc \
+        /usr/share/doc-base
 
 COPY script/entrypoint.sh /entrypoint.sh
 COPY config/airflow.cfg ${AIRFLOW_USER_HOME}/airflow.cfg
 
+RUN chown -R airflow: ${AIRFLOW_USER_HOME}
+
 EXPOSE 8080 5555 8793
 
-RUN mkdir -p $AIRFLOW_USER_HOME && \
-    chown $AIRFLOW_USER:$AIRFLOW_GNAME $AIRFLOW_USER_HOME && \
-    # chmod -R 775 $AIRFLOW_USER_HOME
-    chgrp -R 0 $AIRFLOW_USER_HOME && \
+RUN chgrp -R 0 $AIRFLOW_USER_HOME && \
     chmod -R g=u $AIRFLOW_USER_HOME
 
-USER $AIRFLOW_USER
+USER airflow
 WORKDIR ${AIRFLOW_USER_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["webserver"]
