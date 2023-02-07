@@ -52,6 +52,7 @@ RUN set -ex \
         locales \
         wget \
         curl \
+        libssl-dev \
         python-pip \
         python3-pip \
         python3-pyqt5 \

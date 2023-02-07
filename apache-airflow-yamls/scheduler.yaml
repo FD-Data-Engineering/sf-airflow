@@ -9,7 +9,7 @@ metadata:
     io.kompose.service: webserver
   name: scheduler
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       io.kompose.service: webserver
@@ -48,7 +48,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: redis_conn_id
-          image: docker.io/thescomcontainers/airflow:2.1.6
+          image: docker.io/thescomcontainers/airflow:2.1.7
           name: scheduler
           command: [
               "sh",
