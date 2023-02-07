@@ -34,26 +34,21 @@ spec:
             - name: LOAD_EX
               value: "n"
             - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-          valueFrom:
-            configMapKeyRef:
-              name: apache-airflow-config
-              key: sql_alchemy_conn
-        - name: AIRFLOW__CORE__EXECUTOR
-          valueFrom:
-            configMapKeyRef:
-              name: apache-airflow-config
-              key: executor
-        - name: AIRFLOW__CELERY__RESULT_BACKEND
-          valueFrom:
-            configMapKeyRef:
-              name: apache-airflow-config
-              key: airflow_web_sql_alchemy_conn
-        - name: AIRFLOW__CELERY__BROKER_URL
-          valueFrom:
-            configMapKeyRef:
-              name: apache-airflow-config
-              key: redis_conn_id
-      image: docker.io/thescomcontainers/airflow:2.1.3
+              valueFrom:
+                configMapKeyRef:
+                  name: apache-airflow-config
+                  key: sql_alchemy_conn
+            - name: AIRFLOW__CORE__EXECUTOR
+              valueFrom:
+                configMapKeyRef:
+                  name: apache-airflow-config
+                  key: executor
+            - name: AIRFLOW__CELERY__BROKER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: apache-airflow-config
+                  key: redis_conn_id
+          image: docker.io/thescomcontainers/airflow:2.1.3
       name: webserver
       ports:
         - containerPort: 8080
