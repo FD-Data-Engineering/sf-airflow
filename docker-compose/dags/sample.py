@@ -35,7 +35,8 @@ with DAG(
     tags=["example", "example2"],
     params={"example_key": "example_value"},
 ) as dag:
-[docs]    run_this_last = EmptyOperator(
+[docs]
+    run_this_last = EmptyOperator(
         task_id="run_this_last",
 
     )
