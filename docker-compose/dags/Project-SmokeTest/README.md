@@ -1,2 +1,0 @@
-
-  Smoke Test Folder path
