@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators import BashOperator,PythonOperator
+from airflow.operators.bash_operator import BashOperator
 from datetime import datetime, timedelta
 
 now = datetime.now()
