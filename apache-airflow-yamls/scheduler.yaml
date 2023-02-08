@@ -5,9 +5,10 @@ metadata:
     kompose.cmd: kompose convert -f docker-compose.yml
     kompose.version: 1.26.1 (a9d05d509)
   creationTimestamp: null
+  selector:
   labels:
     io.kompose.service: scheduler
-  name: scheduler
+    name: scheduler
 spec:
   replicas: 1
   selector:
