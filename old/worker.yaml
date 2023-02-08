@@ -22,18 +22,17 @@ spec:
         kompose.version: 1.26.1 (a9d05d509)
       creationTimestamp: null
       labels:
-        io.kompose.network/: "true"
         io.kompose.service: worker
     spec:
+      serviceAccountName: apache-airflow-scheduler
       containers:
-        - args:
-            - worker
-          env:
-            - name: EXECUTOR
-              value: Celery
-            - name: FERNET_KEY
-              value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+        - env:
+          - name: EXECUTOR
+            value: CeleryExecutor
+          - name: FERNET_KEY
+            value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
           image: docker.io/thescomcontainers/airflow:2.1.10
+          name: worker
           resources: {}
           volumeMounts:
             - name: dags-pv
@@ -46,6 +45,7 @@ spec:
               mountPath: /usr/local/airflow/downloads
             - name: plugins-pv
               mountPath: /usr/local/airflow/plugins
+      #restartPolicy: Always
       volumes:
         - name: dags-pv
           persistentVolumeClaim:
@@ -63,3 +63,6 @@ spec:
           persistentVolumeClaim:
             claimName: spark-scripts-pvc
 status: {}
+
+
+
