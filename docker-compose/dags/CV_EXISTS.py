@@ -1,10 +1,11 @@
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.bash_operator import BashOperator
+from airflow.operators import BashOperator,PythonOperator
 from datetime import datetime, timedelta
 
 now = datetime.now()
-FILE = "/usr/local/airflow/downloads/NAWS_A2E197.csv"
+print("Hello_KP")
+#FILE = "/usr/local/downloads/NAWS_A2E197.csv"
 
 default_args = {
     "owner": "airflow",
@@ -25,18 +26,13 @@ dag = DAG(
     )
 start = DummyOperator(task_id="start", dag=dag)
 
-Download_CSV = BashOperator(
-    task_id="Download_CSV",
-    bash_command="wget https://www.dol.gov/sites/dolgov/files/ETA/naws/pdfs/NAWS_A2E197.csv -O /usr/local/airflow/downloads/NAWS_A2E197.csv",
-    dag=dag,
-)
 
 File_Exist = BashOperator(
     task_id="File_Exist",
-    bash_command="test -f $FILE && echo '$FILE exists.' || echo '$FILE does not exist.'",
+    bash_command="echo 'HELLO WORLD'",
     dag=dag,
 )
 
 end = DummyOperator(task_id="end", dag=dag)  
 
-start >> Download_CSV >> File_Exist >> end
+start >> File_Exist >> end
