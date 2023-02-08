@@ -13,6 +13,7 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: scheduler
+    name: scheduler
   strategy:
     type: Recreate
   template:
