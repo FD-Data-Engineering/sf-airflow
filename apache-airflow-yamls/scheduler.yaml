@@ -73,8 +73,8 @@ spec:
             value: CeleryExecutor
           - name: FERNET_KEY
             value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-          - name: LOAD_EX
-            value: "y"
+          #- name: LOAD_EX
+           # value: "y"
           - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
             valueFrom:
               configMapKeyRef:
