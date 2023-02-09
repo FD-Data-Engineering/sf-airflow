@@ -68,6 +68,27 @@ spec:
               mountPath: /usr/local/airflow/downloads
             - name: plugins-pv
               mountPath: /usr/local/airflow/plugins
+        - env:
+          - name: EXECUTOR
+            value: CeleryExecutor
+          - name: FERNET_KEY
+            value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+          image: docker.io/thescomcontainers/airflow:2.1.10
+          name: worker
+          ports:
+          - containerPort: 8973
+          resources: {}
+          volumeMounts:
+            - name: dags-pv
+              mountPath: /usr/local/airflow/dags
+            - name: logs-pv
+              mountPath: /usr/local/airflow/logs
+            - name: spark-scripts-pv
+              mountPath: /usr/local/airflow/spark-scripts
+            - name: downloads-pv
+              mountPath: /usr/local/airflow/downloads
+            - name: plugins-pv
+              mountPath: /usr/local/airflow/plugins      
       volumes:
         - name: dags-pv
           persistentVolumeClaim:
