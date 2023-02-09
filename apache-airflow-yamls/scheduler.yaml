@@ -7,7 +7,6 @@ metadata:
   creationTimestamp: null
   labels:
     io.kompose.service: scheduler
-    name: scheduler
   name: scheduler
 spec:
   replicas: 1
