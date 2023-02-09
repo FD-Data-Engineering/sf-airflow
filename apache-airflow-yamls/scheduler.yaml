@@ -85,11 +85,11 @@ spec:
               configMapKeyRef:
                 name: apache-airflow-config
                 key: executor
-          - name: AIRFLOW__CELERY__RESULT_BACKEND
-            valueFrom:
-              configMapKeyRef:
-                name: apache-airflow-config
-                key: airflow_web_sql_alchemy_conn
+          # - name: AIRFLOW__CELERY__RESULT_BACKEND
+          #   valueFrom:
+          #     configMapKeyRef:
+          #       name: apache-airflow-config
+          #       key: airflow_web_sql_alchemy_conn
           - name: AIRFLOW__CELERY__BROKER_URL
             valueFrom:
               configMapKeyRef:
