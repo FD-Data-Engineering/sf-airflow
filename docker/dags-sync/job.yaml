@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dags-sync-test
+  namespace: dev-sf-deploy-test
+spec:
+  selector: {}
+  template:
+    metadata:
+      name: dags-sync
+    spec:
+      serviceAccountName: apache-airflow-scheduler
+      containers:
+        - name: dags-sync
+          image: docker.io/thescomcontainers/dags-sync:1.0.3
+          command: ["/bin/sh", "/sync_dags.sh"]
+      restartPolicy: Never
