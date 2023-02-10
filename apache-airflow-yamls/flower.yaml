@@ -28,7 +28,7 @@ spec:
       containers:
         - env:
             - name: EXECUTOR
-              value: CeleryExecutor
+              value: KubernetesExecutor
             - name: FLOWER_PORT
               value: "5555"
             - name: AIRFLOW__CELERY__FLOWER_BASIC_AUTH
