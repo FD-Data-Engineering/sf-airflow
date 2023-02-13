@@ -52,7 +52,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: airflow_web_sql_alchemy_conn
-          image: docker.io/prasadgugulla/airflow:1.0.0
+          image: docker.io/thescomcontainers/airflow:2.1.11
           command: ["sh", "-c", "airflow list_users || (airflow celery flower)"]
           name: flower
           ports:
