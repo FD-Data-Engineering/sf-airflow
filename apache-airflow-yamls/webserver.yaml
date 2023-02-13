@@ -28,7 +28,7 @@ spec:
       containers:
         - env:
             - name: EXECUTOR
-              value: KubernetesExecutor
+              value: CeleryExecutor
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
