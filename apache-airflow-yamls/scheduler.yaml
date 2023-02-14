@@ -7,7 +7,7 @@ metadata:
     kompose.version: 1.26.1 (a9d05d509)
   creationTimestamp: null
   labels:
-    io.kompose.service: scheduler
+    name: scheduler
 spec:
   replicas: 1
   selector:
@@ -49,7 +49,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: redis_conn_id
-          image: docker.io/thescomcontainers/airflow:2.1.9
+          image: docker.io/thescomcontainers/airflow:2.1.10
           name: scheduler
           command: [
               "sh",
