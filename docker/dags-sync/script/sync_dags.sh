@@ -2,7 +2,7 @@
 
 airflow_root=`pwd`
 pod_name=$(oc get pods --selector io.kompose.service=scheduler --output=name)
-reponame="https://github.com/FD-Data-Engineering/sf-airflow.git"
+reponame="https://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@github.com/FD-Data-Engineering/sf-airflow.git"
 airflow_dir="sf-airflow/docker-compose"
 git_dir=git
 pod_dest="../../../"
@@ -18,7 +18,7 @@ do
         cd git
         git init
         git config credential.helper store
-        git clone https://xxxxx@github.com/FD-Data-Engineering/sf-airflow.git
+        git clone $reponame
         cd $airflow_dir
         cp -r dags $pod_dest
         cd $airflow_root
@@ -28,7 +28,7 @@ do
         cd git
         cd $airflow_dir
         git config credential.helper store
-        git pull https://xxxxx@github.com/FD-Data-Engineering/sf-airflow.git
+        git pull $reponame
         cp -r dags $pod_dest
         cd $airflow_root
         airflow scheduler -D
