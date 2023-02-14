@@ -7,6 +7,7 @@ metadata:
     kompose.version: 1.26.1 (a9d05d509)
   creationTimestamp: null
   labels:
+    io.kompose.service: scheduler
     name: scheduler
 spec:
   replicas: 1
