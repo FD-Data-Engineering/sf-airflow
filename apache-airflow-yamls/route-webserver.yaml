@@ -3,50 +3,9 @@ apiVersion: route.openshift.io/v1
 metadata:
   name: webserver
   namespace: dev-sf-deploy-test
-  uid: c780a289-49ca-4770-bae1-8db92beaa5ce
-  resourceVersion: '33134567'
-  creationTimestamp: '2023-02-01T22:52:47Z'
   labels:
     app.kubernetes.io/instance: airflow-yamls-test
     io.kompose.service: webserver
-  managedFields:
-    - manager: oc
-      operation: Update
-      apiVersion: route.openshift.io/v1
-      time: '2023-02-01T22:52:47Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:labels':
-            .: {}
-            'f:app.kubernetes.io/instance': {}
-            'f:io.kompose.service': {}
-        'f:spec':
-          'f:host': {}
-          'f:port':
-            .: {}
-            'f:targetPort': {}
-          'f:tls':
-            .: {}
-            'f:key': {}
-            'f:termination': {}
-          'f:to':
-            'f:kind': {}
-            'f:name': {}
-            'f:weight': {}
-          'f:wildcardPolicy': {}
-    - manager: openshift-router
-      operation: Update
-      apiVersion: route.openshift.io/v1
-      time: '2023-02-01T22:52:47Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          'f:tls':
-            'f:certificate': {}
-        'f:status':
-          'f:ingress': {}
-      subresource: status
 spec:
   host: >-
     ibm-sf-airflow-webserver.devsfcluster-56118b4b985711fc98241a723e4ef72a-0000.eu-de.containers.appdomain.cloud
