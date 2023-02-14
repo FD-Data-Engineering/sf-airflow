@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scheduler
   annotations:
     kompose.cmd: kompose convert -f docker-compose.yml
     kompose.version: 1.26.1 (a9d05d509)
@@ -12,6 +11,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
+      name: scheduler
       io.kompose.service: scheduler
   strategy:
     type: Recreate
@@ -48,7 +48,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: redis_conn_id
-          image: docker.io/thescomcontainers/airflow:2.1.10
+          image: docker.io/thescomcontainers/airflow:2.1.9
           name: scheduler
           command: [
               "sh",
