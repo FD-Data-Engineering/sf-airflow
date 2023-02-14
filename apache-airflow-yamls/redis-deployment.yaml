@@ -24,7 +24,7 @@ spec:
         io.kompose.service: redis
     spec:
       containers:
-        - image: redis:5.0.5
+        - image: redis:6.2.0-alpine
           name: redis
           ports:
             - containerPort: 6379

@@ -12,4 +12,4 @@ with DAG(dag_id= 'hello',
          task1 = PythonOperator(task_id ='hello',
          python_callable=hello)
          
-task1
+hello1
