@@ -1,0 +1,16 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: dag-sync-job
+spec:
+  schedule: "30 08 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: apache-airflow-scheduler
+          containers:
+            - name: dags-sync
+              image: docker.io/thescomcontainers/airflow-dags-sync:2.0.0
+              command: ["/bin/sh", "/sync_dags.sh"]
+          restartPolicy: OnFailure
