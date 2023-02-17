@@ -1,0 +1,17 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cleanup-airflow-logs
+  namespace: dev-sf-deploy-test
+spec:
+  schedule: "30 07 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: apache-airflow-scheduler
+          containers:
+            - name: cleanup-airflow-logs
+              image: docker.io/thescomcontainers/cleanup-airflow-logs:1.0.2
+              command: ["/bin/sh", "/logs_cleanup.sh"]
+          restartPolicy: OnFailure

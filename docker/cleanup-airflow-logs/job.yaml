@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cleanup-airflow-logs-test
+  namespace: dev-sf-deploy-test
+spec:
+  selector: {}
+  template:
+    metadata:
+      name: cleanup-airflow-logs-test
+    spec:
+      serviceAccountName: apache-airflow-scheduler
+      containers:
+        - name: cleanup-airflow-logs
+          image: docker.io/thescomcontainers/cleanup-airflow-logs:1.0.1
+          command: ["/bin/sh", "/logs_cleanup.sh"]
+      restartPolicy: Never
