@@ -19,6 +19,4 @@ oc exec $pod_name -- bash -c '
         cp -r dags '$pod_dest'
         echo "Airflow Dags have now been updated"
         cd '$airflow_root'
-        echo "Cleaning up Airflow"
-        find '$airflow_root'/logs/scheduler -type f -mtime +1 -delete
 airflow scheduler -D '
