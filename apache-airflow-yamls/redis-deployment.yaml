@@ -24,7 +24,7 @@ spec:
         io.kompose.service: redis
     spec:
       containers:
-        - image: docker.io/prasadgugulla/redis7:1.0.0
+        - image: docker.io/prasadgugulla/redis7:1.0.1
           name: redis
           ports:
             - containerPort: 6379

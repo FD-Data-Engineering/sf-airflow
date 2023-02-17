@@ -109,7 +109,7 @@ RUN set -eux; \
 	redis-cli --version; \
 	redis-server --version
 
-RUN mkdir /data && chown redis:redis /data
+RUN mkdir /data && chown 1000720000:redis /data
 VOLUME /data
 WORKDIR /data
 
