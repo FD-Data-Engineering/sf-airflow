@@ -29,15 +29,15 @@ default_args = {
     "email_on_retry": False,
     "retries": 1,
     "retry_delay": timedelta(minutes=1),
-    "schedule_interval": '@hourly',
+    "schedule_interval": '@hourly'
 }
 
 dag = DAG(
-        dag_id="Set_variable", 
+        dag_id="sf_refresh_token", 
         description="This DAG is used to set variables in airflow.",
-        default_args=default_args, 
-        retry_delay=timedelta(minutes=5),
-        schedule_interval='@hourly'
+        default_args=default_args,
+        schedule_interval='@hourly',
+        catchup=False
     )
  
 start = DummyOperator(task_id="start", dag=dag)
