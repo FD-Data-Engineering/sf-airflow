@@ -36,7 +36,8 @@ dag = DAG(
         dag_id="Set_variable", 
         description="This DAG is used to set variables in airflow.",
         default_args=default_args, 
-        schedule_interval=timedelta(1)
+        retry_delay=timedelta(minutes=5),
+        schedule_interval='@hourly'
     )
  
 start = DummyOperator(task_id="start", dag=dag)
