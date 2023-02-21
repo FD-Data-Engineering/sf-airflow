@@ -153,7 +153,6 @@ status:
       conditions:
         - type: Admitted
           status: 'True'
-          lastTransitionTime: '2023-02-13T22:49:22Z'
       wildcardPolicy: None
       routerCanonicalHostname: >-
         router-default.devsfcluster-56118b4b985711fc98241a723e4ef72a-0000.eu-de.containers.appdomain.cloud
