@@ -30,10 +30,11 @@ spec:
             - name: POSTGRES_DB
               value: airflow
             - name: POSTGRES_PASSWORD
-              value: airflow
+              valueFrom:
+                secretKeyRef:
+                  name: external-secret
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_USER
-              value: airflow
-            - name: POSTGRES_ADMIN_PASSWORD
               value: airflow
           image: docker.io/thescomcontainers/postgresql13:1.0.0
           name: postgres
