@@ -1,0 +1,18 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: "dev-sf-deploy-test"
+  name: k8-pod-launcher-rolebinding
+  labels:
+    tier: airflow
+    release: release-name
+    chart: "airflow-1.5.0"
+    heritage: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: k8-pod-launcher-role
+subjects:
+  - kind: ServiceAccount
+    name: apache-airflow-scheduler
+    namespace: "dev-sf-deploy-test"

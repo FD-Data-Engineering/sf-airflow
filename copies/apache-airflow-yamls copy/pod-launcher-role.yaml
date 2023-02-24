@@ -1,0 +1,23 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: k8-pod-launcher-role
+  namespace: "dev-sf-deploy-test"
+  labels:
+    tier: airflow
+    release: release-name
+    chart: "airflow-1.5.0"
+    heritage: Helm
+rules:
+  - apiGroups: [""]
+    resources: ["services", "endpoints", "pods"]
+    verbs: ["get", "list", "create", "delete", "watch", "patch"]
+  - apiGroups: [""]
+    resources: ["pods/logs"]
+    verbs: ["get", "list", "create", "delete", "watch", "patch"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["get", "list", "create", "delete", "watch", "patch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list"]

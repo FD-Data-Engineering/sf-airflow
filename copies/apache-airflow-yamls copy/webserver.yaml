@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.26.1 (a9d05d509)
   creationTimestamp: null
   labels:
-    io.kompose.service: flower
-  name: flower
+    io.kompose.service: webserver
+  name: webserver
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: flower
+      io.kompose.service: webserver
   strategy:
     type: Recreate
   template:
@@ -22,20 +22,13 @@ spec:
         kompose.version: 1.26.1 (a9d05d509)
       creationTimestamp: null
       labels:
-        io.kompose.service: flower
+        io.kompose.service: webserver
     spec:
       serviceAccountName: apache-airflow-scheduler
       containers:
         - env:
             - name: EXECUTOR
-              value: KubernetesExecutor
-            - name: FLOWER_PORT
-              value: "5555"
-            - name: AIRFLOW__CELERY__FLOWER_BASIC_AUTH
-              valueFrom:
-                secretKeyRef:
-                  name: external-secret
-                  key: AIRFLOW__CELERY__FLOWER_BASIC_AUTH
+              value: CeleryExecutor
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
@@ -61,9 +54,8 @@ spec:
                   name: apache-airflow-config
                   key: redis_conn_id
           image: docker.io/thescomcontainers/airflow:2.1.12
-          command: ["sh", "-c", "airflow list_users || (airflow celery flower)"]
-          name: flower
+          name: webserver
           ports:
-          - containerPort: 5555
+            - containerPort: 8080
           resources: {}
 status: {}
