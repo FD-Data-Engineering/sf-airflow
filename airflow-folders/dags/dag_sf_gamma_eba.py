@@ -1,6 +1,5 @@
 from airflow.models import DAG, Variable
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.contrib.operators.spark_submit_operator import SparkSubmitOperator
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
