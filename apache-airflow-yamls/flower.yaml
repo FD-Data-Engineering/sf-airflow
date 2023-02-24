@@ -32,10 +32,7 @@ spec:
             - name: FLOWER_PORT
               value: "5555"
             - name: AIRFLOW__CELERY__FLOWER_BASIC_AUTH
-              valueFrom:
-                secretKeyRef:
-                  name: external-secret
-                  key: AIRFLOW__CELERY__FLOWER_BASIC_AUTH
+              value: admin:admin
             - name: FERNET_KEY
               value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - name: LOAD_EX
