@@ -103,7 +103,7 @@ spec:
           name: worker
           ports:
             - containerPort: 8973
-          command: ["sh", "-c", "airflow list_users || (airflow celery worker)"]
+          command: ["sh", "-c", "airflow users list || (airflow celery worker)"]
           resources: {}
           volumeMounts:
             - name: dags-pv
