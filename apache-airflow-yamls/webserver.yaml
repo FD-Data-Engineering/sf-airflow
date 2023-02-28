@@ -56,7 +56,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: redis_conn_id
-          image: docker.io/thescomcontainers/airflow:2.1.12
+          image: docker.io/thescomcontainers/airflow:2.1.13
           name: webserver
           ports:
             - containerPort: 8080

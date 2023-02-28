@@ -51,7 +51,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: redis_conn_id
-          image: docker.io/thescomcontainers/airflow:2.1.12
+          image: docker.io/thescomcontainers/airflow:2.1.13
           name: scheduler
           command: ["sh", "-c", "airflow db init || (airflow scheduler)"]
           resources: {}
@@ -94,7 +94,7 @@ spec:
                 configMapKeyRef:
                   name: apache-airflow-config
                   key: redis_conn_id
-          image: docker.io/thescomcontainers/airflow:2.1.12
+          image: docker.io/thescomcontainers/airflow:2.1.13
           name: worker
           ports:
             - containerPort: 8973
