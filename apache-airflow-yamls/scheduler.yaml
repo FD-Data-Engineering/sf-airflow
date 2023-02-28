@@ -87,7 +87,7 @@ spec:
             - name: AIRFLOW__CORE__EXECUTOR
               valueFrom:
                 configMapKeyRef:
-                  name: eso-config
+                  name: apache-airflow-config
                   key: executor
             - name: AIRFLOW__CELERY__RESULT_BACKEND
               valueFrom:
