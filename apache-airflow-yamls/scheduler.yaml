@@ -53,12 +53,7 @@ spec:
                   key: redis_conn_id
           image: docker.io/thescomcontainers/airflow:2.1.12
           name: scheduler
-          command: [
-              "sh",
-              "-c",
-              "airflow users list || (airflow db init
-              && airflow scheduler)",
-            ]
+          command: ["sh", "-c", "airflow db init || (airflow scheduler)"]
           resources: {}
           volumeMounts:
             - name: dags-pv
@@ -103,7 +98,7 @@ spec:
           name: worker
           ports:
             - containerPort: 8973
-          command: ["sh", "-c", "airflow users list || (airflow celery worker)"]
+          command: ["sh", "-c", "airflow celery worker"]
           resources: {}
           volumeMounts:
             - name: dags-pv
