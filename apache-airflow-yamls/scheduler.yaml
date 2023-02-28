@@ -30,14 +30,17 @@ spec:
             - name: EXECUTOR
               value: CeleryExecutor
             - name: FERNET_KEY
-              value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+              valueFrom:
+                secretKeyRef:
+                  name: external-secret
+                  key: FERNET_KEY
             - name: LOAD_EX
               value: "n"
             - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
               valueFrom:
-                configMapKeyRef:
-                  name: apache-airflow-config
-                  key: sql_alchemy_conn
+                secretKeyRef:
+                  name: external-secret
+                  key: AIRFLOW__CORE__SQL_ALCHEMY_CONN
             - name: AIRFLOW__CORE__EXECUTOR
               valueFrom:
                 configMapKeyRef:
@@ -69,41 +72,38 @@ spec:
             - name: plugins-pv
               mountPath: /usr/local/airflow/plugins
         - env:
-          - name: EXECUTOR
-            value: CeleryExecutor
-          - name: FERNET_KEY
-            value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-          #- name: LOAD_EX
-           # value: "y"
-          - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
-            valueFrom:
-              configMapKeyRef:
-                name: apache-airflow-config
-                key: sql_alchemy_conn
-          - name: AIRFLOW__CORE__EXECUTOR
-            valueFrom:
-              configMapKeyRef:
-                name: apache-airflow-config
-                key: executor
-          - name: AIRFLOW__CELERY__RESULT_BACKEND
-            valueFrom:
-              configMapKeyRef:
-                name: apache-airflow-config
-                key: airflow_web_sql_alchemy_conn
-          - name: AIRFLOW__CELERY__BROKER_URL
-            valueFrom:
-              configMapKeyRef:
-                name: apache-airflow-config
-                key: redis_conn_id
+            - name: EXECUTOR
+              value: CeleryExecutor
+            - name: FERNET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: external-secret
+                  key: FERNET_KEY
+            - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+              valueFrom:
+                secretKeyRef:
+                  name: external-secret
+                  key: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+            - name: AIRFLOW__CORE__EXECUTOR
+              valueFrom:
+                configMapKeyRef:
+                  name: eso-config
+                  key: executor
+            - name: AIRFLOW__CELERY__RESULT_BACKEND
+              valueFrom:
+                secretKeyRef:
+                  name: external-secret
+                  key: AIRFLOW__CELERY__RESULT_BACKEND
+            - name: AIRFLOW__CELERY__BROKER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: apache-airflow-config
+                  key: redis_conn_id
           image: docker.io/thescomcontainers/airflow:2.1.12
           name: worker
           ports:
-          - containerPort: 8973
-          command: [
-              "sh",
-              "-c",
-              "airflow list_users || (airflow celery worker)",
-            ]
+            - containerPort: 8973
+          command: ["sh", "-c", "airflow list_users || (airflow celery worker)"]
           resources: {}
           volumeMounts:
             - name: dags-pv
@@ -115,7 +115,7 @@ spec:
             - name: downloads-pv
               mountPath: /usr/local/airflow/downloads
             - name: plugins-pv
-              mountPath: /usr/local/airflow/plugins      
+              mountPath: /usr/local/airflow/plugins
       volumes:
         - name: dags-pv
           persistentVolumeClaim:
