@@ -28,13 +28,20 @@ spec:
       containers:
         - env:
             - name: POSTGRES_DB
-              value: airflow
+              valueFrom:
+                secretKeyRef:
+                  name: external-secret
+                  key: POSTGRES_DB
             - name: POSTGRES_PASSWORD
-              value: airflow
+              valueFrom:
+                secretKeyRef:
+                  name: external-secret
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_USER
-              value: airflow
-            - name: POSTGRES_ADMIN_PASSWORD
-              value: airflow
+              valueFrom:
+                secretKeyRef:
+                  name: external-secret
+                  key: POSTGRES_USER
           image: docker.io/thescomcontainers/postgresql13:1.0.0
           name: postgres
           ports:

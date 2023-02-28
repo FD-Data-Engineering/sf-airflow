@@ -30,14 +30,17 @@ spec:
             - name: EXECUTOR
               value: CeleryExecutor
             - name: FERNET_KEY
-              value: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+              valueFrom:
+                secretKeyRef:
+                  name: external-secret
+                  key: FERNET_KEY
             - name: LOAD_EX
               value: "n"
             - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
               valueFrom:
-                configMapKeyRef:
-                  name: apache-airflow-config
-                  key: sql_alchemy_conn
+                secretKeyRef:
+                  name: external-secret
+                  key: AIRFLOW__CORE__SQL_ALCHEMY_CONN
             - name: AIRFLOW__CORE__EXECUTOR
               valueFrom:
                 configMapKeyRef:
@@ -45,9 +48,9 @@ spec:
                   key: executor
             - name: AIRFLOW__CELERY__RESULT_BACKEND
               valueFrom:
-                configMapKeyRef:
-                  name: apache-airflow-config
-                  key: airflow_web_sql_alchemy_conn
+                secretKeyRef:
+                  name: external-secret
+                  key: AIRFLOW__CELERY__RESULT_BACKEND
             - name: AIRFLOW__CELERY__BROKER_URL
               valueFrom:
                 configMapKeyRef:
