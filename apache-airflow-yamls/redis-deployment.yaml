@@ -9,7 +9,7 @@ metadata:
     io.kompose.service: redis
   name: redis
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       io.kompose.service: redis
