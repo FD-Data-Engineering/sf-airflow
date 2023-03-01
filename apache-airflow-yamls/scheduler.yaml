@@ -38,9 +38,9 @@ spec:
               value: "n"
             - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
               valueFrom:
-                configMapKeyRef:
-                  name: apache-airflow-config
-                  key: sql_alchemy_conn
+                secretKeyRef:
+                  name: external-secret
+                  key: AIRFLOW__CORE__SQL_ALCHEMY_CONN
             - name: AIRFLOW__CORE__EXECUTOR
               valueFrom:
                 configMapKeyRef:
