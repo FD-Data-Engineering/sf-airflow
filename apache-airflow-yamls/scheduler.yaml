@@ -52,8 +52,12 @@ spec:
                   name: apache-airflow-config
                   key: redis_conn_id
           image: docker.io/thescomcontainers/airflow:2.1.13
-          name: scheduler
-          command: ["sh", "-c", "airflow db init || (airflow scheduler)"]
+          command: [
+              "sh",
+              "-c",
+              "airflow list_users || (airflow db init
+              && airflow scheduler)",
+            ]
           resources: {}
           volumeMounts:
             - name: dags-pv
