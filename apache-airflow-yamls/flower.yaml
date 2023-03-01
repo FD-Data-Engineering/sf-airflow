@@ -64,7 +64,7 @@ spec:
                   name: apache-airflow-config
                   key: redis_conn_id
           image: docker.io/thescomcontainers/airflow:2.1.13
-          command: ["sh", "-c", "airflow celery flower"]
+          command: ["sh", "-c", "airflow db init && airflow celery flower"]
           name: flower
           ports:
             - containerPort: 5555
