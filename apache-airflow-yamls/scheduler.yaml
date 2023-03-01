@@ -9,7 +9,7 @@ metadata:
     io.kompose.service: scheduler
   name: scheduler
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       io.kompose.service: scheduler
