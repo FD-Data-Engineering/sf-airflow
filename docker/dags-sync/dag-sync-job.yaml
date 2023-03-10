@@ -11,6 +11,6 @@ spec:
           serviceAccountName: apache-airflow-scheduler
           containers:
             - name: dags-sync
-              image: docker.io/thescomcontainers/airflow-dags-sync:2.0.0
+              image: docker.io/thescomcontainers/airflow-dags-sync:2.0.2
               command: ["/bin/sh", "/sync_dags.sh"]
           restartPolicy: OnFailure

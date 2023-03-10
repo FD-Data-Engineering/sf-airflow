@@ -2,7 +2,7 @@
 
 airflow_root=`pwd`
 pod_name=$(oc get pods --selector io.kompose.service=scheduler --output=name | sed -e 's/^[[pod/]]*//' -e 's/^[[pod/]]*//' -e 's/^[[pod/]]*//' -e 's/^[[pod/]]*//' -e 's/^[[pod/]]*//')
-reponame="xxxxx@github.com/FD-Data-Engineering/sf-airflow.git"
+reponame="https://xxxxx@github.com/FD-Data-Engineering/sf-airflow.git"
 airflow_dir="sf-airflow/airflow-folders"
 git_dir=git
 pod_dest="../../../"
