@@ -87,8 +87,8 @@ checkToken = PythonOperator(task_id='fetch_access_token_expiration', python_call
 mergeairbus = PythonOperator(task_id='mergeairbus', python_callable=triggerBatch, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications","access_token":Variable.get("Access_Token"), "jobDetails":{"application_details": {      
         "application": "cos://transformedairbusdata.Airbus/scripts/v.1.0/mergeairbus.py",
         "conf": {"spark.hadoop.fs.cos.Airbus.endpoint": "s3.direct.eu-de.cloud-object-storage.appdomain.cloud",
-                 "spark.hadoop.fs.cos.Airbus.access.key": "01fc0d80849541eda6515b9d6ea2329b",
-                 "spark.hadoop.fs.cos.Airbus.secret.key": "65862b4d74e5183f18f96bed6b44c93f235ea3363bf6d607",
+                 "spark.hadoop.fs.cos.Airbus.access.key": "3dbafb4b2fc74197bf8502767a9a73cc",
+                 "spark.hadoop.fs.cos.Airbus.secret.key": "5c306426caedaf8782fd4cd8a1cf39e6e46e36e20e885f7a",
                  "spark.app.name": "SF-Airbus-Merge-data"      }   }  }}, dag=dag)
 
 checkMergeAirbusStatus = PythonOperator(task_id='mergeairbusJobStatus', python_callable=jobCompletionCheck, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications/{{ task_instance.xcom_pull(task_ids='mergeairbus') }}/state","access_token":Variable.get("Access_Token")}, dag=dag)   
