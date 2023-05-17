@@ -80,7 +80,7 @@ dag = DAG(
         schedule_interval=None
     )
 
-start_load_airbus = DummyOperator(task_id="start_load", dag=dag)
+start_load = DummyOperator(task_id="start_load", dag=dag)
 
 checkToken = PythonOperator(task_id='fetch_access_token_expiration', python_callable=fetch_access_token_expiration, dag=dag)
 
@@ -91,8 +91,8 @@ job_load_visualization = BashOperator(task_id='job_load_visualization', python_c
                  "spark.hadoop.fs.cos.Airbus.secret.key": "65862b4d74e5183f18f96bed6b44c93f235ea3363bf6d607",
                  "spark.app.name": "SF-Airbus-Visualization-data"      }   }  }}, dag=dag)
 
-checkVisualizatioStatus = PythonOperator(task_id='visualizationJobStatus', python_callable=jobCompletionCheck, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications/{{ task_instance.xcom_pull(task_ids='mergeairbus') }}/state","access_token":Variable.get("Access_Token")}, dag=dag)   
+checkVisualizationStatus = PythonOperator(task_id='visualizationJobStatus', python_callable=jobCompletionCheck, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications/{{ task_instance.xcom_pull(task_ids='job_load_visualization') }}/state","access_token":Variable.get("Access_Token")}, dag=dag)   
 
-end_load_airbus = DummyOperator(task_id="end_load_airbus", dag=dag)
+end_load = DummyOperator(task_id="end_load", dag=dag)
 
-start_load_airbus >> checkToken >> job_load_visualization >> checkVisualizatioStatus >> end_load_airbus
+start_load >> checkToken >> job_load_visualization >> checkVisualizationStatus >> end_load
