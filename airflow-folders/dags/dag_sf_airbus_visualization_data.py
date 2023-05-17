@@ -77,14 +77,14 @@ dag = DAG(
         dag_id="SF-Airbus-visualization-data-process", 
         description="DAG to process airbus visualization data",
         default_args=default_args, 
-        schedule_interval=None
+        schedule_interval=timedelta(1)
     )
 
 start_load = DummyOperator(task_id="start_load", dag=dag)
 
 checkToken = PythonOperator(task_id='fetch_access_token_expiration', python_callable=fetch_access_token_expiration, dag=dag)
 
-job_load_visualization = BashOperator(task_id='job_load_visualization', python_callable=triggerBatch, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications","access_token":Variable.get("Access_Token"), "jobDetails":{"application_details": {      
+job_load_visualization = PythonOperator(task_id='job_load_visualization', python_callable=triggerBatch, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications","access_token":Variable.get("Access_Token"), "jobDetails":{"application_details": {      
         "application": "cos://transformedairbusdata.Airbus/scripts/v.1.0/airbus_loan_visualisation.py",
         "conf": {"spark.hadoop.fs.cos.Airbus.endpoint": "s3.direct.eu-de.cloud-object-storage.appdomain.cloud",
                  "spark.hadoop.fs.cos.Airbus.access.key": "01fc0d80849541eda6515b9d6ea2329b",
