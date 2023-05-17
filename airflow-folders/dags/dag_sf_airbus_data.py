@@ -86,7 +86,7 @@ checkToken = PythonOperator(task_id='fetch_access_token_expiration', python_call
 
 mergeairbus = PythonOperator(task_id='mergeairbus', python_callable=triggerBatch, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications","access_token":Variable.get("Access_Token"), "jobDetails":{"application_details": {      
         "application": "cos://transformedairbusdata.Airbus/scripts/v.1.0/mergeairbus.py",
-        "arguments": ["cos://ingestedairbusdata.Airbus/portfolio/dt=20230515/01_NBS_Portfolio_Bristol_230216.csv","cos://ingestedairbusdata.Airbus/twinn/dt=20230515/02_NBS_Portfolio_Bristol_230216_TWINN.csv","cos://ingestedairbusdata.Airbus/latlong/dt=20230515/03_NBS_Portfolio_Bristol_230216_LatLon.csv"],
+        "arguments": ["cos://ingestedairbusdata.Airbus/portfolio/dt="+dtStr+"/01_NBS_Portfolio_Bristol_230216.csv","cos://ingestedairbusdata.Airbus/twinn/="+dtStr+"/02_NBS_Portfolio_Bristol_230216_TWINN.csv","cos://ingestedairbusdata.Airbus/latlong/dt="+dtStr+"/03_NBS_Portfolio_Bristol_230216_LatLon.csv"],
         "conf": {"spark.hadoop.fs.cos.Airbus.endpoint": "s3.direct.eu-de.cloud-object-storage.appdomain.cloud",
                  "spark.hadoop.fs.cos.Airbus.access.key": "01fc0d80849541eda6515b9d6ea2329b",
                  "spark.hadoop.fs.cos.Airbus.secret.key": "65862b4d74e5183f18f96bed6b44c93f235ea3363bf6d607",
