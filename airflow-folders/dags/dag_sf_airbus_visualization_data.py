@@ -77,7 +77,7 @@ dag = DAG(
         dag_id="SF-Airbus-visualization-data-process", 
         description="DAG to process airbus visualization data",
         default_args=default_args, 
-        schedule_interval=timedelta(1)
+        schedule_interval=None
     )
 
 start_load = DummyOperator(task_id="start_load", dag=dag)
@@ -86,7 +86,10 @@ checkToken = PythonOperator(task_id='fetch_access_token_expiration', python_call
 
 job_load_visualization = PythonOperator(task_id='job_load_visualization', python_callable=triggerBatch, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications","access_token":Variable.get("Access_Token"), "jobDetails":{"application_details": {      
         "application": "cos://transformedairbusdata.Airbus/scripts/v.1.0/airbus_loan_visualisation.py",
-   }  }}, dag=dag)
+        "conf": {"spark.hadoop.fs.cos.Airbus.endpoint": "s3.direct.eu-de.cloud-object-storage.appdomain.cloud",
+                 "spark.hadoop.fs.cos.Airbus.access.key": "01fc0d80849541eda6515b9d6ea2329b",
+                 "spark.hadoop.fs.cos.Airbus.secret.key": "65862b4d74e5183f18f96bed6b44c93f235ea3363bf6d607",
+                 "spark.app.name": "SF-Airbus-Visualization-data"      }   }  }}, dag=dag)
 
 checkVisualizationStatus = PythonOperator(task_id='visualizationJobStatus', python_callable=jobCompletionCheck, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications/{{ task_instance.xcom_pull(task_ids='job_load_visualization') }}/state","access_token":Variable.get("Access_Token")}, dag=dag)   
 
