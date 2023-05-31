@@ -73,7 +73,7 @@ default_args = {
 }
 
 dag = DAG(
-        dag_id="SF-Airbus-EBA-PILLAR-III", 
+        dag_id="SF-Airbus-EBA", 
         description="This DAG is  for Airbus EBA Pillar III report",
         default_args=default_args, 
         schedule_interval=None
@@ -90,7 +90,7 @@ job_eba = PythonOperator(task_id='job_eba', python_callable=triggerBatch, op_kwa
         "conf": {"spark.hadoop.fs.cos.Airbus.endpoint": "s3.direct.eu-de.cloud-object-storage.appdomain.cloud",
                  "spark.hadoop.fs.cos.Airbus.access.key": "01fc0d80849541eda6515b9d6ea2329b",
                  "spark.hadoop.fs.cos.Airbus.secret.key": "65862b4d74e5183f18f96bed6b44c93f235ea3363bf6d607",
-                 "spark.app.name": "SF-Airbus-EBA-PILLAR-III"      }   }  }}, dag=dag)
+                 "spark.app.name": "SF-Airbus-EBA"      }   }  }}, dag=dag)
 
 job_eba_status = PythonOperator(task_id='job_eba_status', python_callable=jobCompletionCheck, op_kwargs={"api_url":"https://api.eu-de.ae.cloud.ibm.com/v3/analytics_engines/2f641c08-2aee-438c-b8a0-eb1738f88c58/spark_applications/{{ task_instance.xcom_pull(task_ids='job_eba') }}/state","access_token":Variable.get("Access_Token")}, dag=dag)   
 
