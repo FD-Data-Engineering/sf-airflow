@@ -30,7 +30,7 @@ start = DummyOperator(task_id="start", dag=dag)
 
 File_Download = BashOperator(
     task_id="Download_File",
-    bash_command="curl --retry 5 -O -C - C:\Users\pgugulla\prometheus",
+    bash_command="curl --retry 5 - C:\Users\pgugulla\prometheus",
     dag=dag
 )
 
