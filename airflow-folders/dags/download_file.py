@@ -30,7 +30,7 @@ start = DummyOperator(task_id="start", dag=dag)
 
 File_Download = BashOperator(
     task_id="Download_File",
-    bash_command="curl https://github.com/os-climate/os_c_data_commons/blob/main/os-climate-diagrams.pdf  -O /usr/local/airflow/downloads/os-climate-diagrams.pdf --retry 2",
+    bash_command="curl https://github.com/os-climate/os_c_data_commons/blob/main/os-climate-diagrams.pdf  -O /usr/local/airflow/os-climate-diagrams.pdf --retry 2",
     dag=dag
 )
 
