@@ -7,7 +7,7 @@ now = datetime.now()
 print("File Downloaded")
 #FILE = "/usr/local/downloads/NAWS_A2E197.csv"
 #data_path = "C:\Users\pgugulla\prometheus"
-data_path = "/usr/local/airflow/airflow-scheduler.err"
+#data_path = "/usr/local/airflow/airflow-scheduler.err"
 default_args = {
     "owner": "airflow",
     "depends_on_past": False,
@@ -30,7 +30,7 @@ start = DummyOperator(task_id="start", dag=dag)
 
 File_Download = BashOperator(
     task_id="Download_File",
-    bash_command="curl --retry 5 - /usr/local/airflow/airflow-scheduler.err",
+    bash_command="curl --retry 5 -O /usr/local/airflow/downloads/os-climate-diagrams.pdf https://github.com/os-climate/os_c_data_commons/blob/main/os-climate-diagrams.pdf",
     dag=dag
 )
 
