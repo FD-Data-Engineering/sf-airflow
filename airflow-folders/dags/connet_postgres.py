@@ -35,18 +35,18 @@ insert_data_sql_query = """
 insert into employee (id, name, dept) values(1, 'Prasad','bigdata'),(2, 'Hari','bigdata'),(3, 'Binny','projectmanager'),
 (4, 'omair','projectmanager') ;"""
 
-    create_table = PostgresOperator(
-    sql = create_table_sql_query,
-    task_id = "create_table_task",
-    postgres_conn_id = "postgres_default",
-    dag = dag_psql
-    )
+create_table = PostgresOperator(
+sql = create_table_sql_query,
+task_id = "create_table_task",
+postgres_conn_id = "postgres_default",
+dag = dag_psql
+   )
 
-    insert_data = PostgresOperator(
-    sql = insert_data_sql_query,
-    task_id = "insert_data_task",
-    postgres_conn_id = "postgres_default",
-    dag = dag_psql
+insert_data = PostgresOperator(
+sql = insert_data_sql_query,
+task_id = "insert_data_task",
+postgres_conn_id = "postgres_default",
+dag = dag_psql
     )
 
 end = DummyOperator(task_id="end", dag=dag)  
