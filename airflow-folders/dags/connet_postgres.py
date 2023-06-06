@@ -18,7 +18,7 @@ default_args = {
     "retry_delay": timedelta(minutes=1)
 }
 
-dag_psql = DAG(
+dag = DAG(
     dag_id = "postgresoperator_demo",
     default_args=default_args,
     # schedule_interval='0 0 * * *',
@@ -41,15 +41,16 @@ create_table = PostgresOperator(
 sql = create_table_sql_query,
 task_id = "create_table_task",
 postgres_conn_id = "postgres_default",
-dag = dag_psql
+dag = dag
    )
 
 insert_data = PostgresOperator(
 sql = insert_data_sql_query,
 task_id = "insert_data_task",
 postgres_conn_id = "postgres_default",
-dag = dag_psql
+dag = dag
     )
 
 end = DummyOperator(task_id="end", dag=dag)  
 start >> create_table >> insert_data >> end
+#create_table >> insert_data
