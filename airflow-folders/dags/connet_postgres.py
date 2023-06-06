@@ -3,6 +3,7 @@ from airflow import DAG
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
+from airflow.operators.dummy_operator import DummyOperator
 import airflow
 
 now = datetime.now()
