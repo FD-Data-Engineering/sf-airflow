@@ -31,7 +31,7 @@ dag = DAG(
 start = DummyOperator(task_id="start", dag=dag)
 
 select_table_sql_query = """ 
-SELECT * FROM TABLE employee);
+SELECT * FROM TABLE employee;
 """
 
 select_table = PostgresOperator(
