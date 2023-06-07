@@ -31,7 +31,7 @@ dag = DAG(
 start = DummyOperator(task_id="start", dag=dag)
 
 alter_table_sql_query = """ 
-ALTER TABLE employee ADD (address VARCHAR(250) NOT NULL);
+ALTER TABLE employee ADD COLUMN address VARCHAR(250);
 """
 
 alter_table = PostgresOperator(
