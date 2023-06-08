@@ -19,7 +19,7 @@ default_args = {
 }
 
 dag = DAG(
-    dag_id = "select_table",
+    dag_id = "update_record",
     default_args=default_args,
     # schedule_interval='0 0 * * *',
     schedule_interval='@once',	
@@ -30,12 +30,11 @@ dag = DAG(
 
 start = DummyOperator(task_id="start", dag=dag)
 
-select_table_sql_query = """ 
-SELECT * FROM TABLE employee;
-"""
+insert_data_sql_query = """
+insert into employee (id, name, dept) values(5, 'richa','dataengineer') ;"""
 
-select_table = PostgresOperator(
-sql = select_table_sql_query,
+insert_table = PostgresOperator(
+sql = insert_data_sql_query,
 task_id = "select_table_task",
 postgres_conn_id = "postgres_default",
 dag = dag
