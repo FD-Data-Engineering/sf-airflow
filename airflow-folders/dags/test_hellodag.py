@@ -1,6 +1,7 @@
 import pytest
-
 from airflow.models import DagBag
+from airflow.operators.python import PythonOperator
+
 
 
 @pytest.fixture()
